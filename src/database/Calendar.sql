@@ -1,0 +1,103 @@
+drop table if EXISTS Users;
+drop table if EXISTS Event;
+DROP TABLE if EXISTS Groups;
+drop TABLE if EXISTS Calendar;
+drop TABLE if EXISTS Availability;
+drop TABLE if EXISTS Display;
+DROP TABLE if EXISTS Type;
+drop TABLE if EXISTS Included;
+DROP TABLE if EXISTS EventAdd;
+DROP TABLE if EXISTS GCal;
+drop TABLE if EXISTS Has;
+drop TABLE if EXISTS EventType;
+
+
+CREATE TABLE Users(
+  Uid INTEGER PRIMARY KEY AUTOINCREMENT,
+  username VARCHAR(255) NOT NULL,
+  pass VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Groups(
+  Gid INTEGER PRIMARY KEY AUTOINCREMENT,
+  Gname VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Calendar(
+  Cid INTEGER PRIMARY KEY AUTOINCREMENT,
+  Cname VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Event(
+  Eid INTEGER PRIMARY KEY AUTOINCREMENT,
+  Title VARCHAR(255) NOT NULL,
+  Description TEXT,
+  StartTime VARCHAR(255) not NULL,
+  EndTime VARCHAR(255) not NULL,
+  Day INTEGER Not NULL,
+  Month INTEGER Not NULL,
+  EYear INTEGER Not NULL
+);
+
+CREATE TABLE Type(
+  Tid Integer PRIMARY KEY AUTOINCREMENT,
+  Tname VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Availability(
+  Aid INTEGER PRIMARY KEY AUTOINCREMENT,
+  Day INTEGER Not NULL,
+  Month INTEGER Not NULL,
+  AYear INTEGER Not NULL,
+  StartTime VARCHAR(255) NOT NULL,
+  EndTime VARCHAR(255) Not NULL
+);
+
+CREATE table GCal(
+  CalendarID INTEGER,
+  GroupID INTEGER,
+  PRIMARY key (CalendarID, GroupID),
+  FOREIGN KEY (CalendarID) REFERENCES Calendar(Cid),
+  FOREIGN KEY (GroupID) REFERENCES Groups(Gid)
+);
+
+CREATE Table Included(
+  UserID INTEGER,
+  GroupID INTEGER,
+  PRIMARY key (UserID, GroupID),
+  FOREIGN KEY (UserID) REFERENCES Users(Uid),
+  FOREIGN KEY (GroupID) REFERENCES Groups(Gid)
+);
+
+CREATE table Has(
+  EventID INTEGER,
+  TypeID INTEGER,
+  PRIMARY key (EventID, TypeID),
+  FOREIGN KEY (TypeID) REFERENCES Type(Tid),
+  FOREIGN KEY (EventID) REFERENCES Event(Eid)
+);
+
+CREATE table Display(
+  AvailID INTEGER,
+  CalID INTEGER,
+  PRIMARY key (AvailID, CalID),
+  FOREIGN KEY (AvailID) REFERENCES Availability(Aid),
+  FOREIGN KEY (CalID) REFERENCES Calendar(Cid)
+);
+
+CREATE table EventType(
+  TypeID INTEGER,
+  EventID INTEGER,
+  PRIMARY key (EventID, TypeID),
+  FOREIGN KEY (TypeID) REFERENCES Type(Tid),
+  FOREIGN KEY (EventID) REFERENCES Event(Eid)
+);
+
+CREATE table EventAdd(
+  CalendarID INTEGER,
+  EventID INTEGER,
+  PRIMARY key (EventID, CalendarID),
+  FOREIGN KEY (CalendarID) REFERENCES Calendar(Cid),
+  FOREIGN KEY (EventID) REFERENCES Event(Eid)
+);
+
