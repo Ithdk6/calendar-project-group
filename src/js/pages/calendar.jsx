@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import Navbar from '../parts/navbar';
+import Notification from '../parts/notification';
 import '../css/calendar.css'
 
 const Calendar = () => {
@@ -21,12 +22,24 @@ const Calendar = () => {
             .catch((error) => console.log('Failed to fetch events:', error));
     }, []);
 
-    const handleAddEvent = () => {
-        setShowModal(true)
+    // Function to schedule a notification
+    const scheduleNotification = async (text, status, duration, scheduleTime, userId) => {
+      const response = await fetch('http://localhost:3001/add-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, status, duration, scheduleTime }),
+      });
+
+      const data = await response.json();
+      console.log('Notification scheduled:', data);
     };
 
-    const handleSubmit = () => {
-        e.preventDefault();
+    const handleAddEvent = () => {
+        setShowModal(true);
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
         const fullDateTime = `${newEvent.date}T${newEvent.time}`;
         setEvents([
             ...events,
@@ -36,6 +49,10 @@ const Calendar = () => {
                 group: newEvent.group,
             }
         ]);
+
+        // Later, associate notification with authenticated users
+        scheduleNotification(newEvent.title, 0, 60000, fullDateTime, 'user123');
+
         setShowModal(false);
         setNewEvent({title: '', date:'', group: 'Work'});
     };
@@ -53,6 +70,9 @@ const Calendar = () => {
                     <li>Family</li>
                 </ul>
                 </aside>
+
+            <Notification />
+
             <main className="calendar-main">
                 <div className="calendar-header">
                     <h2>My Calendar</h2>
