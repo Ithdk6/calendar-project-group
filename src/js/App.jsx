@@ -5,6 +5,7 @@ import Signin from './pages/signin';
 import Register from "./pages/register";
 import About from "./pages/about";
 import Contact from "./pages/contact";
+import Calendar from "./pages/calendar";
 
 const App = () => (
     <Router>
@@ -14,6 +15,7 @@ const App = () => (
             <Route path="/register" element={<Register />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/calendar" element={<Calendar />} />
         </Routes>
     </Router>
 );

@@ -14,6 +14,7 @@ const Navbar = () => {
             <button className="signin" onClick={handleSignin}>Sign In</button>
             <nav className="nav-links">
                 <a href="/">Home</a>
+                <a href="/calendar">Calendar</a>
                 <a href="/about">About</a>
                 <a href="/contact">Contact</a>
             </nav>
