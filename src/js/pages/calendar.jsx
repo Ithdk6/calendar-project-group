@@ -22,12 +22,11 @@ const Calendar = () => {
             .catch((error) => console.log('Failed to fetch events:', error));
     }, []);
 
-    // Function to schedule a notification
     const scheduleNotification = async (text, status, duration, scheduleTime, userId) => {
       const response = await fetch('http://localhost:3001/add-notification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, status, duration, scheduleTime }),
+        body: JSON.stringify({ text, status, duration, scheduleTime, userId }),
       });
 
       const data = await response.json();
@@ -50,7 +49,7 @@ const Calendar = () => {
             }
         ]);
 
-        // Later, associate notification with authenticated users
+        // TODO: associate notification with authenticated users
         scheduleNotification(newEvent.title, 0, 60000, fullDateTime, 'user123');
 
         setShowModal(false);

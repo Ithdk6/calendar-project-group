@@ -16,26 +16,31 @@ const Notification = () => {
     setNotification(text);
     setVisible(true);
 
-    if (status === 0) setNotificationClass('successColors');
-    else if (status === 1) setNotificationClass('neutralColors');
-    else if (status === 2) setNotificationClass('failColors');
+    if (status === 0)
+      setNotificationClass('successColors');
+    else if (status === 1)
+      setNotificationClass('neutralColors');
+    else if (status === 2)
+      setNotificationClass('failColors');
 
-    if (duration !== undefined) {
+    if (duration !== undefined)
       setTimeout(clearNotification, duration);
-    }
   };
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      const response = await fetch('http://localhost:3001/get-next-notification');
-      const data = await response.json();
-
+    const ws = new WebSocket('ws://localhost:3001?userId=user123');
+    
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
       if (data.text) {
+        console.log(data);
         sendNotification(data.text, data.status, data.duration);
       }
-    }, 5000); // Poll every 5 seconds for new notifications
-
-    return () => clearInterval(interval);
+    };
+    
+    return () => {
+      ws.close();
+    };
   }, []);
 
   return (

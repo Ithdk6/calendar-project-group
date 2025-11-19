@@ -6,7 +6,8 @@
     "node-cron": "^4.2.1",
     "react-router-dom": "^7.9.5",
     "react-scripts": "^5.0.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "ws": "^8.18.3"
   },
   "scripts": {
     "start": "react-scripts start",
