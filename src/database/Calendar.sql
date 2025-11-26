@@ -1,5 +1,6 @@
 drop table if EXISTS Users;
-drop table if EXISTS Event;
+DROP TABLE IF EXISTS EventCore;
+DROP TABLE IF EXISTS EventTime;
 DROP TABLE if EXISTS Groups;
 drop TABLE if EXISTS Calendar;
 drop TABLE if EXISTS Availability;
@@ -10,7 +11,6 @@ DROP TABLE if EXISTS EventAdd;
 DROP TABLE if EXISTS GCal;
 drop TABLE if EXISTS Has;
 drop TABLE if EXISTS EventType;
-
 
 CREATE TABLE Users(
   Uid INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,15 +28,21 @@ CREATE TABLE Calendar(
   Cname VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE Event(
+CREATE TABLE EventCore(
   Eid INTEGER PRIMARY KEY AUTOINCREMENT,
   Title VARCHAR(255) NOT NULL,
-  Description TEXT,
+  Description TEXT
+);
+
+--descriptor table for event via splitting the original event table into a core and a time table
+CREATE TABLE EventTime(
+  EventID INTEGER,  --same id as EventCore
   StartTime VARCHAR(255) not NULL,
   EndTime VARCHAR(255) not NULL,
   Day INTEGER Not NULL,
   Month INTEGER Not NULL,
-  EYear INTEGER Not NULL
+  EYear INTEGER Not NULL,
+  PRIMARY KEY (EventID)
 );
 
 CREATE TABLE Type(
@@ -53,51 +59,44 @@ CREATE TABLE Availability(
   EndTime VARCHAR(255) Not NULL
 );
 
+--mapping table for calendar and group
 CREATE table GCal(
   CalendarID INTEGER,
   GroupID INTEGER,
-  PRIMARY key (CalendarID, GroupID),
-  FOREIGN KEY (CalendarID) REFERENCES Calendar(Cid),
-  FOREIGN KEY (GroupID) REFERENCES Groups(Gid)
+  PRIMARY key (CalendarID, GroupID)
 );
 
+--mapping table for group and user
 CREATE Table Included(
   UserID INTEGER,
   GroupID INTEGER,
-  PRIMARY key (UserID, GroupID),
-  FOREIGN KEY (UserID) REFERENCES Users(Uid),
-  FOREIGN KEY (GroupID) REFERENCES Groups(Gid)
+  PRIMARY key (UserID, GroupID)
 );
 
+--mapping table for Event and Type
 CREATE table Has(
   EventID INTEGER,
   TypeID INTEGER,
-  PRIMARY key (EventID, TypeID),
-  FOREIGN KEY (TypeID) REFERENCES Type(Tid),
-  FOREIGN KEY (EventID) REFERENCES Event(Eid)
+  PRIMARY key (EventID, TypeID)
 );
 
+--mapping table for Availability and User
 CREATE table Display(
   AvailID INTEGER,
   CalID INTEGER,
-  PRIMARY key (AvailID, CalID),
-  FOREIGN KEY (AvailID) REFERENCES Availability(Aid),
-  FOREIGN KEY (CalID) REFERENCES Calendar(Cid)
+  PRIMARY key (AvailID, CalID)
 );
 
+--mapping table for Type and Event
 CREATE table EventType(
   TypeID INTEGER,
   EventID INTEGER,
-  PRIMARY key (EventID, TypeID),
-  FOREIGN KEY (TypeID) REFERENCES Type(Tid),
-  FOREIGN KEY (EventID) REFERENCES Event(Eid)
+  PRIMARY key (EventID, TypeID)
 );
 
+--mapping table for calendar and event
 CREATE table EventAdd(
   CalendarID INTEGER,
   EventID INTEGER,
-  PRIMARY key (EventID, CalendarID),
-  FOREIGN KEY (CalendarID) REFERENCES Calendar(Cid),
-  FOREIGN KEY (EventID) REFERENCES Event(Eid)
+  PRIMARY key (EventID, CalendarID)
 );
-
