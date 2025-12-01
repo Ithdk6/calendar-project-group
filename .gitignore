@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs
+/src/database/calendar.db
+/src/database/my-database.db
+/src/database/Calendar.sql

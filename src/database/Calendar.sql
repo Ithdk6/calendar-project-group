@@ -21,6 +21,7 @@ CREATE TABLE Users(
 CREATE TABLE Groups(
   Gid INTEGER PRIMARY KEY AUTOINCREMENT,
   Gname VARCHAR(255) NOT NULL
+  constraint unique_groupname UNIQUE (Gname)
 );
 
 CREATE TABLE Calendar(
