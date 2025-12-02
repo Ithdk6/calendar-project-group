@@ -1,7 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
+const fs = require('fs').promises;
 
-// 1. Connect to the database
-// If 'my-database.db' doesn't exist, it will be created automatically.
+//Connect to the database
+//if database doesn't exist, it will be created
 db = new sqlite3.Database('./calendar.db', (err) => {
   if (err) {
     console.error(err.message);
@@ -9,47 +10,39 @@ db = new sqlite3.Database('./calendar.db', (err) => {
   console.log('Connected to the SQLite database.');
 });
 
-// 2. Perform Database Operations
-// serialize function makes these run one after another
-db.serialize(() => {
+async function executeSetup() {
+    sqlSetup = await readFileContent();
+    db.exec(sqlSetup, (err) => {
+        if (err) {
+            console.error("Error executing SQL setup:", err.message);
+            return;
+        }
+        else{
+            console.log("Database setup completed successfully.");
+        }
+        db.close((err) => {
+            if (err) {
+                console.error(err.message);
+            }
+            console.log('Close the database connection.');
+        });
+    });
+}
 
-  // Create a table named 'users'
-  db.run(`DROP table if EXISTS Users;`);
-  db.run(`
-CREATE TABLE Users(
-  Uid INTEGER PRIMARY KEY AUTOINCREMENT,
-  username VARCHAR(255) NOT NULL,
-  pass VARCHAR(255) NOT NULL);`
-  );
-  db.run(`DROP table if EXISTS Groups;`);
-  db.run(`
+// read the sql file content
+async function readFileContent() {
+    try {
+        
+        const data = await fs.readFile('./Calendar.sql', 'utf8');
+        
+        console.log("File content:");
+        console.log(data);
+        
+        return data;
 
-CREATE TABLE Groups(
-  Gid INTEGER PRIMARY KEY AUTOINCREMENT,
-  Gname VARCHAR(255) NOT NULL
-);`
-  );
-db.run(`
-CREATE Table Included(
-  UserID INTEGER,
-  GroupID INTEGER,
-  PRIMARY key (UserID, GroupID)
-);`
-  );
-
-  db.run(`DROP table if EXISTS Calendar;`);
-  db.run(`
-CREATE TABLE Calendar(
-  Cid INTEGER PRIMARY KEY AUTOINCREMENT,
-  Cname VARCHAR(255) NOT NULL
-);`);
-
-});
-
+    } catch (err) {
+        console.error("Error reading file:", err.message);
+    }
+}
+executeSetup();
 // 3. Close the connection when done
-db.close((err) => {
-  if (err) {
-    console.error(err.message);
-  }
-  console.log('Close the database connection.');
-});

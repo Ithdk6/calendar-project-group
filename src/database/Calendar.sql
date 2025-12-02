@@ -1,16 +1,16 @@
-drop table if EXISTS Users;
+DROP TABLE if EXISTS Users;
 DROP TABLE IF EXISTS EventCore;
 DROP TABLE IF EXISTS EventTime;
 DROP TABLE if EXISTS Groups;
-drop TABLE if EXISTS Calendar;
-drop TABLE if EXISTS Availability;
-drop TABLE if EXISTS Display;
+DROP TABLE if EXISTS Calendar;
+DROP TABLE if EXISTS Availability;
+DROP TABLE if EXISTS Display;
 DROP TABLE if EXISTS Type;
-drop TABLE if EXISTS Included;
+DROP TABLE if EXISTS Included;
 DROP TABLE if EXISTS EventAdd;
 DROP TABLE if EXISTS GCal;
-drop TABLE if EXISTS Has;
-drop TABLE if EXISTS EventType;
+DROP TABLE if EXISTS Has;
+DROP TABLE if EXISTS EventType;
 
 CREATE TABLE Users(
   Uid INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,8 +20,8 @@ CREATE TABLE Users(
 
 CREATE TABLE Groups(
   Gid INTEGER PRIMARY KEY AUTOINCREMENT,
-  Gname VARCHAR(255) NOT NULL
-  constraint unique_groupname UNIQUE (Gname)
+  Gname VARCHAR(255) NOT NULL,
+  constraint unique_groupname unique (Gname)
 );
 
 CREATE TABLE Calendar(
@@ -74,14 +74,14 @@ CREATE Table Included(
   PRIMARY key (UserID, GroupID)
 );
 
---mapping table for Event and Type
+--mapping table for User and Availability
 CREATE table Has(
-  EventID INTEGER,
-  TypeID INTEGER,
-  PRIMARY key (EventID, TypeID)
+  UserID INTEGER,
+  AvailID INTEGER,
+  PRIMARY key (UserID, AvailID)
 );
 
---mapping table for Availability and User
+--mapping table for Availability and Calendar
 CREATE table Display(
   AvailID INTEGER,
   CalID INTEGER,
