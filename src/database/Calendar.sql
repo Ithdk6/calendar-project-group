@@ -37,18 +37,19 @@ CREATE TABLE EventCore(
 
 --descriptor table for event via splitting the original event table into a core and a time table
 CREATE TABLE EventTime(
-  EventID INTEGER,  --same id as EventCore
+  EventID INTEGER PRIMARY KEY,
   StartTime VARCHAR(255) not NULL,
   EndTime VARCHAR(255) not NULL,
   Day INTEGER Not NULL,
   Month INTEGER Not NULL,
   EYear INTEGER Not NULL,
-  PRIMARY KEY (EventID)
+  FOREIGN KEY (EventID) REFERENCES EventCore(Eid) ON DELETE CASCADE
 );
 
 CREATE TABLE Type(
   Tid Integer PRIMARY KEY AUTOINCREMENT,
-  Tname VARCHAR(255) NOT NULL
+  Tname VARCHAR(255) NOT NULL,
+  constraint unique_typename unique (Tname)
 );
 
 CREATE TABLE Availability(
