@@ -12,5 +12,8 @@
   "type": "commonjs",
   "dependencies": {
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1"
   }
 }

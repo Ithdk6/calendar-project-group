@@ -42,8 +42,7 @@ CREATE TABLE EventTime(
   EndTime VARCHAR(255) not NULL,
   Day INTEGER Not NULL,
   Month INTEGER Not NULL,
-  EYear INTEGER Not NULL,
-  FOREIGN KEY (EventID) REFERENCES EventCore(Eid) ON DELETE CASCADE
+  EYear INTEGER Not NULL
 );
 
 CREATE TABLE Type(
@@ -75,20 +74,6 @@ CREATE Table Included(
   PRIMARY key (UserID, GroupID)
 );
 
---mapping table for User and Availability
-CREATE table Has(
-  UserID INTEGER,
-  AvailID INTEGER,
-  PRIMARY key (UserID, AvailID)
-);
-
---mapping table for Availability and Calendar
-CREATE table Display(
-  AvailID INTEGER,
-  CalID INTEGER,
-  PRIMARY key (AvailID, CalID)
-);
-
 --mapping table for Type and Event
 CREATE table EventType(
   TypeID INTEGER,
@@ -101,4 +86,11 @@ CREATE table EventAdd(
   CalendarID INTEGER,
   EventID INTEGER,
   PRIMARY key (EventID, CalendarID)
+);
+
+--mapping table for User and Availability
+CREATE table Has(
+  UserID INTEGER,
+  AvailID INTEGER,
+  PRIMARY key (UserID, AvailID)
 );

@@ -36,8 +36,8 @@ class databaseClass {
         try{
             const result = await this.runQuery(sql, [name, pass]);
         
-            console.log(`User ${name} added.`);
-            console.log(`The User ID is ${result.id}`);
+            //console.log(`User ${name} added.`);
+            //console.log(`The User ID is ${result.id}`);
         
             return result.id;
         }
@@ -46,7 +46,7 @@ class databaseClass {
         }
     }
 
-    //adds a new group with that user as a member
+    //adds a new group with that user as a member - complete
     async addGroup(name, userID){
         const sqlGroup = "INSERT INTO Groups (Gname) VALUES (?)";
         const sqlIncludes = "INSERT INTO Included (Userid, Groupid) VALUES (?, ?)";
@@ -54,55 +54,55 @@ class databaseClass {
         try{
         //Insert the new group into Groups table
         const result = await this.runQuery(sqlGroup, [name]);
-        console.log(`Group ${name} added to the database.`);
+        //console.log(`Group ${name} added to the database.`);
 
         // Get the ID of the newly created group
         const GroupID = result.id;
-        console.log(`The Group ID is ${GroupID}`);
+        //console.log(`The Group ID is ${GroupID}`);
 
         //Insert the mapping of group and user into Included table
         await this.runQuery(sqlIncludes, [userID, GroupID]);
-        console.log(`User ${userID} added to Group ${GroupID}.`);
+        //console.log(`User ${userID} added to Group ${GroupID}.`);
 
         } catch (err){
             console.error("Error adding group:", err);
         }
     }
 
-    //Adds a user to an existing group
+    //Adds a user to an existing group - complete
     async addUserToGroup(UserID, GroupID){
         const sqlIncludes = "INSERT INTO Included (Userid, Groupid) VALUES (?, ?)";
 
         try{
 
         //map a new user to a group via included table
-        await this.runQuery(sqlIncludes, [userID, GroupID]);
-        console.log(`User ${userID} added to Group ${GroupID}.`);
+        await this.runQuery(sqlIncludes, [UserID, GroupID]);
+        //console.log(`User ${userID} added to Group ${GroupID}.`);
 
         } catch (err){
             console.error("Error adding group:", err);
         }
     }
 
-    //Adds a new availability to the user
+    //Adds a new availability to the user - complete
     async addAvailability(userID, startTime, endTime, Day, Month, Year){
         const sqlAvail = "INSERT INTO Availability (Day, Month, AYear, StartTime, EndTime) VALUES (?, ?, ?, ?, ?)";
         const sqlHas = "INSERT INTO Has (UserID, AvailID) VALUES (?, ?)";
         try{
             //Insert the new availability into Availability table
             const result = await this.runQuery(sqlAvail, [Day, Month, Year, startTime, endTime]);
-            console.log(`Availability ${result.id} added to the Avail table.`);
+            //console.log(`Availability ${result.id} added to the Avail table.`);
 
             //Insert the mapping of availability and user into Has table
             await this.runQuery(sqlHas, [userID, result.id]);
-            console.log(`Availability ${result.id} added to the Has table.`);
+            //console.log(`Availability ${result.id} added to the Has table.`);
         }
         catch (err){
             console.error("Error Adding Availability:", err);
         }
     }
 
-    //Adds a new event to a calendar
+    //Adds a new event to a calendar - complete
     async addEvent(ETitle, Description, Type, StartTime, EndTime, Day, Month, Year, CalID){
         const sqlECore = "INSERT INTO EventCore (Title, Description) VALUES (?, ?)";
         const sqlETime = "INSERT INTO EventTime (EventID, StartTime, EndTime, Day, Month, EYear) VALUES (?, ?, ?, ?, ?, ?)";
@@ -110,58 +110,57 @@ class databaseClass {
         try{
 
         const result = await this.runQuery(sqlECore, [ETitle, Description]);
-        console.log(`Event ${ETitle} added to EventCore.`);
+        //console.log(`Event ${ETitle} added to EventCore.`);
 
         await this.runQuery(sqlETime, [result.id, StartTime, EndTime, Day, Month, Year]);
-        console.log(`Event ${result.id} added to EventTime.`);
+        //console.log(`Event ${result.id} added to EventTime.`);
 
         await this.runQuery(sqlEventAdd, [CalID, result.id]);
-        console.log(`Event ${result.id} added to EventAdd.`);
+        //console.log(`Event ${result.id} added to EventAdd.`);
 
         } catch (err){
             console.error("Error adding Event:", err);
         }
     }
 
-    //Adds a blank calendar to a group
-    async addBlankCalendar(Gid, Cid, calName){
+    //Adds a blank calendar to a group - complete
+    async addBlankCalendar(Gid, calName){
 
-        const sql = "INSERT INTO Calendar (calName) VALUES (?)";
-        const sqlGCal = "INSERT INTO GCal (Gid, Cid) VALUES (?, ?)";
+        const sql = "INSERT INTO Calendar (Cname) VALUES (?)";
+        const sqlGCal = "INSERT INTO GCal (GroupID, CalendarID) VALUES (?, ?)";
         try{
             const result = await this.runQuery(sql, [calName]);
         
-            console.log(`Calender ${calName} added.`);
-            console.log(`The Calendar ID is ${result.id}`);
+            //console.log(`Calender ${calName} added.`);
+            //console.log(`The Calendar ID is ${result.id}`);
             
-            await this.runQuery(sqlGCal, [Gid, Cid]);
+            await this.runQuery(sqlGCal, [Gid, result.id]);
 
-            console.log(`mapping of Group and Calendar`);
-            return result.id;
+            //console.log(`mapping of Group and Calendar`);
         }
         catch (err){
             console.error("Error adding Calendar:", err);
         }
     }
 
-    //Adds a new type of Event to the database
+    //Adds a new type of Event to the database - complete
     async addEventType(typeName, Eid){
 
         const sqlType = "INSERT INTO Type (Tname) VALUES (?)";
         const sqlEventType = "INSERT INTO EventType (TypeID, EventID) VALUES (?, ?)";
         try{
             const result = await this.runQuery(sqlType, [typeName]);
-            console.log(`Type ${typeName} added.`);
+            //console.log(`Type ${typeName} added.`);
             
             await this.runQuery(sqlEventType, [result.id, Eid]);
-            console.log(`mapping of Type and Event added`);
+            //console.log(`mapping of Type and Event added`);
         }
         catch (err){
             console.error("Error adding Type:", err);
         }
     }
 
-    //deletes an availability from the database - 
+    //deletes an availability from the database - complete
     async deleteAvailability(Aid){
         const sqlDeleteAvail = "DELETE FROM Availability WHERE Aid = ?";
         const sqlDeleteHas = "DELETE FROM Has WHERE AvailID = ?";
@@ -171,11 +170,11 @@ class databaseClass {
         await this.runQuery("BEGIN TRANSACTION");
         try{
             //Delete all mappings of this Avail to User from Has table
-            this.db.run(sqlDeleteHas, [Aid]);
+            await this.runQuery(sqlDeleteHas, [Aid]);
             console.log(`Avail ${Aid} Deleted from Has.`);
 
             //Delete the Avail from Availability table
-            this.db.run(sqlDeleteAvail, [Aid]);
+            await this.runQuery(sqlDeleteAvail, [Aid]);
             console.log(`Avail ${Aid} Deleted from Avail.`);
 
             //end the transaction
@@ -198,11 +197,11 @@ class databaseClass {
         await this.runQuery("BEGIN TRANSACTION");
         try{
             //Delete all mappings of this Type to Events from EventType table
-            this.db.run(sqlDeleteType, [Tid]);
+            await this.runQuery(sqlDeleteEType, [Tid]);
             console.log(`Type ${Tid} Deleted from EventType.`);
 
             //Delete the Type from Type table
-            this.db.run(sqlDeleteType, [Tid]);
+            await this.runQuery(sqlDeleteType, [Tid]);
             console.log(`Type ${Tid} Deleted from Type.`);
 
             //end the transaction
@@ -215,61 +214,61 @@ class databaseClass {
         }
     }
 
-    //Deletes a Group from the database - 
-    async deleteGroup(GroupID){
-        const sqlDeleteIncluded = "DELETE FROM Included WHERE GroupID = ?";
+    //Deletes a Group from the database - complete
+    //Also needs to delete all child nodes including, Calandars, Events,
+    //EventCore, EventTime, EventType and their mapping tables in buisiness logic
+    async deleteGroup(GroupID) {
+        const sqlDeleteGCal = "DELETE FROM GCal WHERE GroupID = ?";
         const sqlDeleteGroup = "DELETE FROM Groups WHERE Gid = ?";
+        const sqlDeleteIncluded = "DELETE FROM Included WHERE GroupID = ?";
 
-        //wrap all sql commands in a "Packet" so that in the instance of a server crash,
-        //it can rollback to the previous stable state
         await this.runQuery("BEGIN TRANSACTION");
+        try {
+            //Delete all mappings of this group to calendars from GCal table
+            await this.runQuery(sqlDeleteGCal, [GroupID]);
+            console.log(`Group ${GroupID} Deleted from GCal.`);
 
-        try{
-            //Delete all mappings of users to this group from Included table
-            this.db.run(sqlDeleteIncluded, [GroupID]);
+            //delete all mappings of this group to users from Included table
+            await this.runQuery(sqlDeleteIncluded, [GroupID]);
             console.log(`Group ${GroupID} Deleted from Included.`);
 
             //Delete the group from Groups table
-            this.db.run(sqlDeleteGroup, [GroupID]);
+            await this.runQuery(sqlDeleteGroup, [GroupID]);
             console.log(`Group ${GroupID} Deleted from Groups.`);
 
             await this.runQuery("COMMIT");
         }
-        catch (err){
+        catch (err) {
             //roll back the delete if error occured
             await this.runQuery("ROLLBACK");
-            console.error("Error deleting group:", err);
+            console.error("Error deleting User:", err);
         }
+        
     }
 
-    //Deletes a user from the database - 
+    //Deletes a user from the database - complete
+    //Also needs to delete all child nodes including Availability during its call stack, 
+    //and possibly groups if they are the only one that is in that group
     async deleteUser(UserID){
         const sqlDeleteIncluded = "DELETE FROM Included WHERE UserID = ?";
         const sqlDeleteUser = "DELETE FROM Users WHERE Uid = ?";
         const sqlDeleteUHas = "DELETE FROM Has WHERE UserID = ?";
-        const fetchAvailIDs = "SELECT AvailID FROM Has WHERE UserID = ?";
 
         //wrap all sql commands in a "Packet" so that in the instance of a server crash,
         //it can rollback to the previous stable state
         await this.runQuery("BEGIN TRANSACTION");
         try{
             //Delete all mappings of this user to groups from Included table
-            this.db.run(sqlDeleteIncluded, [UserID]);
+            await this.runQuery(sqlDeleteIncluded, [UserID]);
             console.log(`User ${UserID} Deleted from Included.`);
 
-            //fetch all availability IDs associated with this user
-            this.db.all(sqlDeleteUHas, [UserID], (err, rows) => {
-                if (err) {
-                    throw err;
-                }
-                const ids = rows.map((row) => row.AvailID);
-                console.log(`Fetched Availability IDs for User ${UserID}. Ids: ${ids}`);
-            });
-            
-
             //Delete the user from Users table
-            this.db.run(sqlDeleteUser, [UserID]);
+            await this.runQuery(sqlDeleteUser, [UserID]);
             console.log(`User ${UserID} Deleted from Users.`);
+
+            //Delete the user mapping from has table
+            await this.runQuery(sqlDeleteUHas, [UserID]);
+            console.log(`User ${UserID} Deleted from Has.`);
     
             //end the transaction
             await this.runQuery("COMMIT");
@@ -281,7 +280,7 @@ class databaseClass {
         }
     }
 
-    //removes a user's access to a group - 
+    //removes a user's access to a group - Complete
     async removeUserFromGroup(UserID, GroupID){
         const sqlDeleteIncluded = "DELETE FROM Included WHERE UserID = ? AND GroupID = ?";
 
@@ -290,7 +289,7 @@ class databaseClass {
         await this.runQuery("BEGIN TRANSACTION");
 
         try{
-            this.db.run(sqlDeleteIncluded, [UserID, GroupID]);
+            await this.runQuery(sqlDeleteIncluded, [UserID, GroupID]);
             console.log(`User ${UserID} Deleted from Included.`);
             //end the transaction
             await this.runQuery("COMMIT");
@@ -302,27 +301,27 @@ class databaseClass {
         }
     }
 
-    //Deletes a calendar from a group - 
+    //Deletes a calendar from a group - complete
     async deleteCalendar(groupID, calID){
-        const sqlDeleteGCal = "DELETE FROM GCal WHERE (Uid, Cid) = (?, ?)";
+        const sqlDeleteGCal = "DELETE FROM GCal WHERE (GroupID, CalendarID) = (?, ?)";
         const sqlDeleteCal = "DELETE FROM Calendar WHERE Cid = ?";
-        const sqlDeleteEventAdded = "DELETE FROM EventAdded WHERE Cid = ?";
+        const sqlDeleteEventAdded = "DELETE FROM EventAdd WHERE CalendarID = ?";
 
         //wrap all sql commands in a "Packet" so that in the instance of a server crash,
         //it can rollback to the previous stable state
         await this.runQuery("BEGIN TRANSACTION");
         try{
             //Delete all mappings of this user to groups from Included table
-            this.db.run(sqlDeleteGCal, [groupID, calID]);
+            await this.runQuery(sqlDeleteGCal, [groupID, calID]);
             console.log(`Calendar mapping ${calID} Deleted from GCal.`);
 
             //Delete the user from Users table
-            this.db.run(sqlDeleteCal, [calID]);
+            await this.runQuery(sqlDeleteCal, [calID]);
             console.log(`Calendar ${calID} Deleted from Calendar.`);
 
             //Delete the user from Users table
-            this.db.run(sqlDeleteEventAdded, [calID]);
-            console.log(`Calendar mapping ${calID} Deleted from Calendar.`);
+            await this.runQuery(sqlDeleteEventAdded, [calID]);
+            console.log(`Calendar mapping ${calID} Deleted from EventAdded.`);
 
             //end the transaction
             await this.runQuery("COMMIT");
@@ -332,10 +331,11 @@ class databaseClass {
             await this.runQuery("ROLLBACK");
             console.error("Error deleting Calendar:", err);
         }
+
     }
 
     //Deletes an event from a calendar - Complete
-    async deleteEvent(EventID, CalID){
+    async deleteEvent(EventID){
         const sqlDeleteEventAdded = "DELETE FROM EventAdd WHERE EventID = ?";
         const sqlDeleteECore = "DELETE FROM EventCore WHERE Eid = ?";
         const sqlDeleteEType = "DELETE FROM EventType WHERE EventID = ?";
@@ -347,19 +347,19 @@ class databaseClass {
 
         try{
             //Delete the EventTime from EventType table
-            await this.db.run(sqlDeleteEType, [EventID]);
+            await this.runQuery(sqlDeleteEType, [EventID]);
             console.log(`Type mapping ${EventID} Deleted from Type.`);
 
             //Delete the Event from EventCore table
-            await this.db.run(sqlDeleteECore, [EventID]);
+            await this.runQuery(sqlDeleteECore, [EventID]);
             console.log(`Event ${EventID} Deleted from EventCore.`);
 
             //Delete all mappings of this Event to Calendar from EventAdd table
-            await this.db.run(sqlDeleteEventAdded, [EventID]);
+            await this.runQuery(sqlDeleteEventAdded, [EventID]);
             console.log(`Event mapping ${EventID} Deleted from EventAdd.`);
 
             //Delete from EventTime table
-            await this.db.run(sqlDeleteETime, [EventID]);
+            await this.runQuery(sqlDeleteETime, [EventID]);
             console.log(`Event mapping ${EventID} Deleted from EventTime.`);
 
             //end the transaction
@@ -372,27 +372,52 @@ class databaseClass {
         }
     }
 
-    
+    //Finds all Calendar IDs from a group - complete
+    async findCidsFromGCal(Gid) {
+        const sqlFindCIDs = `SELECT CalendarID FROM GCal WHERE GroupID = ?`;
+        let rows = [];
+        rows = await new Promise((resolve, reject) => {
+            this.db.all(sqlFindCIDs, [Gid], (err, rows) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(rows.map(row => row.CalendarID));
+                console.log(`Calendar Ids of Group ${rows}`);
+            });
+        });
+        return rows;
+    }
 
+    //Finds all Event IDs from a calendar - complete
+    async findEidsFromCalendar(calID) {
+        const sqlFindEIDs = `SELECT EventID FROM EventAdd WHERE CalendarID = ?`;
+        let ids = [];
+        ids = await new Promise((resolve, reject) => {
+            this.db.all(sqlFindEIDs, [calID], (err, rows) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(rows.map(row => row.EventID));
+                console.log(`Event Ids of calendar ${ids}`);
+            });
+        });
+        return ids;
+    }
+
+    //Finds Group ID from a User - complete
+    async findGroupFromUser(UID) {
+        const sqlFindGIDs = `SELECT GroupID FROM Included WHERE UserID = ?`;
+        const row = await new Promise((resolve, reject) => {
+            this.db.get(sqlFindGIDs, [UID], (err, row) => {
+                if (err) reject(err);
+                resolve(row);
+            });
+        });
+        if (!row) {
+            console.log(`No group found for user ${UID}`);
+            return null;
+        }
+
+        return row.GroupID;
+    }
 }
-
-
-async function main(){
-    const myDB = new databaseClass('calendar');
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    const userID = await myDB.addUser('Alice', 'password123');
-    await myDB.addAvailability(userID, '09:00', '11:00', 15, 8, 2024);
-    await myDB.addAvailability(userID, '13:00', '15:00', 15, 8, 2024);
-    await myDB.addAvailability(userID, '10:00', '12:00', 16, 8, 2024);
-    await myDB.addAvailability(userID, '14:00', '16:00', 17, 8, 2024);
-    await myDB.deleteUser(userID);
-    
-    rl.close();
-}
-
-
-main();
