@@ -1,42 +1,40 @@
 //actual file routes will be finalized later
-import {db} from '../database/Calendar.sql
-import {generateID} from '../astro/utils'
+import {db} from '../database/databaseAggregateFunctions.js';
+import {generateID} from '../astro/utils';
 
 export async function post({request}) {
 	const command = await request.json();
 	
 	//idempotency check
-	const exists = await db.commands.findOne({commandID: command.commandID});
-	if (exists) {
-		return new Response(JSON.stringify({status: 'already_processed'}), {status: 200});
-	}
+	try{
+		const sqlCheck = "SELECT CommandID FROM Commands WHERE CommandID = ?";
+		const exists = await db.getQuery(sqlCheck, [command.commandID]);
+		if (exists) {
+			return new Response(JSON.stringify({status: 'already_processed'}), {status: 200});
+		}
 	
 	//validating payload
-	if (!command.payload.userId || !command.payload.event?.length) {
-		return new Response(JSON.stringify({error: 'Invalid payload'}), {status: 400});
+		if (!command.payload.userId || !command.payload.event?.length) {
+			return new Response(JSON.stringify({error: 'Invalid payload'}), {status: 400});
+		}
+
+		
+		const newEvent = await db.createEventWithOutbox(
+			command.payload.userId,
+			command.payload.groupId,
+			command.payload.event,
+			command.payload.description,
+			command.payload.dateTime,
+			command.payload.type
+		);
+		//outbox created inside the database class instance via the createEventWithOutbox
+		//save Command ID in database
+		const sqlCommand = "INSERT INTO Commands (CommandID) VALUES (?)";
+		await db.runQuery(sqlCommand, [command.commandID]);
+		return new Response(JSON.stringify({status: 'accepted', commandId: command.commandId, eventId: newEvent}), {status: 202});
 	}
-	
-	const event = {
-		eventId: generateId(),
-		userId: command.payload.userId,
-		groupId: command.payload.groupId,
-		event: command.payload.event,
-		dateTime: command.payload.dateTime,
-		status: 'Created'
-	};
-	await db.events.insert(event);
-	
-	const outbox = {
-		outboxId: generateId(),
-		outboxType: 'EventCreated',
-		aggregateId: event.eventId,
-		version: 1,
-		payload: event,
-		createdAt: new Date().toISOString(),
-		processed: false
-	};
-	await db.outbox.insert(outbox);
-	
-	return new Response(JSON.stringify({status: 'accepted', commandId: command.commandId}), {status: 202});
+	catch(err){
+		return new Response(JSON.stringify({error: err.message}), {status: 500});
+	}
 }
 		
