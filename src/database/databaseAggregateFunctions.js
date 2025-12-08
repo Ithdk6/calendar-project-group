@@ -520,3 +520,6 @@ class databaseClass {
         return row.GroupID;
     }
 }
+
+const db = new databaseClass('calendar');
+export { db };
