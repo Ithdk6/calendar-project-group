@@ -1,13 +1,33 @@
-//paths will be finalized later (on break and not at main computer that has npm server)
-//import the db
-//import eventBus from Astro
+import {db} from '../database/databaseAggregateFunctions'
+import {Kafka} from 'kafkajs'
+
+const kafka = new Kafka({
+    clientId: "calendar-service",
+    brokers: ["localhost:9092"]
+});
+
+const producer = kafka.producer();
 
 async function publishOutbox() {
-	const outboxs = await db.outbox.find({processed: false});
+    const sqlCommand = "SELECT * FROM Outbox WHERE Processed = 0 ORDER BY CreatedAt ASC"
+	const outboxs = await db.runQuery(sqlCommand)
+
 	for (const ob of outboxs) {
-		await eventBus.publish(ob)//Kafka implementation goes here
-		await db.outbox.update({outboxId: ob.outboxId}, {processed: true});
+		await producer.send({
+            topic: ob.outboxType,
+            messages: [
+                {key: ob.OutboxId.toString(), value: ob.Payload},
+            ]
+        });
+
+        const sqlOutbox = `UPDATE Outbox set Processed = 1 WHERE outboxId = ob.OutboxId}`
+        await db.runQuery(sqlOutbox)
+
+        console.log(`Published and processed outbox entry ${ob.OutboxId}`)
 	}
 }
 
-setInterval(publishOutbox, 5000);//runs every 5sec (can be changed later)
+(async () => {
+    await producer.connect();
+    setInterval(publishOutbox, 5000);//runs every 5sec (can be changed later)
+})();
