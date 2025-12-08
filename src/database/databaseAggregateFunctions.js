@@ -1,8 +1,6 @@
-const readline = require('readline');
-const sqlite3 = require('sqlite3').verbose();
-
+//src/database/databaseAggregateFunctions.js
+import sqlite3 from 'sqlite3';
 class databaseClass {
-
     constructor(Dname) {
         this.db = new sqlite3.Database(`./${Dname}.db`, (err) => {
             if (err) {
@@ -11,7 +9,7 @@ class databaseClass {
             console.log('Connected to the SQLite database.');
         });
     }
-
+    //runs provided sql query with parameters
     runQuery(sql, params = []) {
         return new Promise((resolve, reject) => {
             this.db.run(sql, params, function (err) {
@@ -27,7 +25,7 @@ class databaseClass {
             });
         });
     }
-
+    //gets a single row from the database
     getQuery(sql, params = []) {
         return new Promise((resolve, reject) => {
             this.db.get(sql, params, (err, row) => {
@@ -41,8 +39,7 @@ class databaseClass {
         const sql = "INSERT INTO Outbox (Type, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
         await this.runQuery(sql, [type, aggregateId, JSON.stringify(payload), createdAt, 0]);
     }
-
-
+    //creates an event with outbox pattern implemented
     async createEventWithOutbox(userId, groupId, eventTitle, description, dateTime, type) {
 
         const dateObj = new Date(dateTime);
@@ -117,10 +114,6 @@ class databaseClass {
             throw err;
         }
     }
-
-
-    //waiting for the db to run a query to continue execution
-    
 
     //Adds a new user to the database
     async addUser(name, pass) {
