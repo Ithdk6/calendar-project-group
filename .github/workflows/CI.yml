@@ -4,7 +4,7 @@ on:
   pull_request:
 
   push:
-    branches: [ master ]
+    branches: [ dev ]
 
 jobs:
   test-javascript:
@@ -26,6 +26,18 @@ jobs:
           cache: npm
 
       - name: Install Dependencies
-        id: requirements-txt
-        run:  |
-          pip install -r requirements.txt
+        id: npm-ci
+        run: npm ci
+
+      - name: Check Format
+        id: npm-format-check
+        run: npm run format:check
+
+      - name: Lint
+        id: npm-lint
+        run: npm run lint
+
+      - name: Test
+        id: npm-ci-test
+        run: npm run ci-test
+          
