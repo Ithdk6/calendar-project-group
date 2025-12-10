@@ -1,3 +1,31 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+														//Obsolete
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //actual file routes will be finalized later
 import {db} from '../database/databaseAggregateFunctions.js';
 

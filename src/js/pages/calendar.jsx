@@ -12,8 +12,11 @@ const Calendar = () => {
         title: '',
         date:'',
         time: '',
-        group: 'Work', //Default to work
+        type: 'Work', //Default to work
     });
+
+    //userId now temporarily stored locally
+    const userId = localStorage.getItem('userId');
 
     useEffect(() => {
         fetch('../../api/events')
@@ -37,31 +40,67 @@ const Calendar = () => {
         setShowModal(true);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+
+        const commandId = crypto.randomUUID();
         const fullDateTime = `${newEvent.date}T${newEvent.time}`;
-        setEvents([
-            ...events,
-            {
-                title: `${newEvent.title} (${newEvent.group})`,
+
+
+        const payload = {
+            commandId: commandId,
+            payload: {
+                title: newEvent.title,
                 date: fullDateTime,
-                group: newEvent.group,
+                type: newEvent.type,
+                userId: userId, // Pass in user id
+                time: fullDateTime
             }
-        ]);
+        };
 
-        // TODO: associate notification with authenticated users
-        scheduleNotification(newEvent.title, 0, 60000, fullDateTime, 'user123');
 
-        setShowModal(false);
-        setNewEvent({title: '', date:'', group: 'Work'});
+        try {
+
+            //save event to database
+            const response = await fetch('/api/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save event');
+            }
+
+            //local save data
+            setEvents([
+                ...events,
+                {
+                    title: newEvent.title,
+                    date: fullDateTime,
+                    type: newEvent.type,
+                }
+            ]);
+
+            // TODO: associate notification with authenticated users
+            //use local userId after event added
+            scheduleNotification(newEvent.title, 0, 60000, fullDateTime, userId);
+
+            setShowModal(false);
+            setNewEvent({ title: '', date: '', time: '', type: 'Work' });
+        }
+        catch (err) {
+            console.error(err);
+            alert("Failed to create event. Please try again.");
+        }
     };
 
     return (
         <div className="calendar-container">
             <Navbar />
 
-            <aside className="group-sidebar">
-                <h3>Groups</h3>
+            <aside className="type-sidebar">
+                <h3>Types</h3>
                 <ul>
                     <li>All Events</li>
                     <li>Work</li>
@@ -114,10 +153,10 @@ const Calendar = () => {
                                 onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
                                 required
                             />
-                            <label>Group</label>
+                            <label>Type</label>
                             <select
-                                value={newEvent.group}
-                                onChange={(e) => setNewEvent({...newEvent, group: e.target.value})}
+                                value={newEvent.type}
+                                onChange={(e) => setNewEvent({...newEvent, type: e.target.value})}
                             >
                                 <option value="Work">Work</option>
                                 <option value="Personal">Personal</option>
