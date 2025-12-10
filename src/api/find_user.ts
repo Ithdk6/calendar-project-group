@@ -27,10 +27,7 @@ export async function post({ request }) {
 
 		//find userid from email and password
 		const sql = "SELECT Uid, pass FROM users WHERE (email) = (?)"
-		const rows = await db.getQuery(
-			sql,
-			[command.payload.email]
-		);
+		const rows = await db.getQuery(sql, [command.payload.email]);
 
 		if (rows.length == 0) {
 			return new Response(JSON.stringify({ error: 'Invalid credentials' }), { status: 401 });
