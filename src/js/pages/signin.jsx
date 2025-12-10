@@ -10,7 +10,7 @@ const Signin = () => {
 
     const [error, setError] = useState(null); 
     const [isLoading, setIsLoading] = useState(false);
-    const handleSubimt = (e) => {
+    const handleSubimt = async (e) => {
         e.preventDefault();
         
         setError(null);
@@ -20,7 +20,7 @@ const Signin = () => {
         const commandId = crypto.randomUUID();
 
         try {
-            const response = await fetch('../../api/signin', {
+            const response = await fetch('/api/signin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
