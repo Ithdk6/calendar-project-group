@@ -48,7 +48,7 @@ class databaseClass {
         try {
             //save Command ID in database
             const sqlCommand = "INSERT INTO Commands (CommandID) VALUES (?)";
-            await db.runQuery(sqlCommand, [command.commandID]);
+            await this.runQuery(sqlCommand, [command.commandID]);
 
             //Insert into users
             const sqlUser = "INSERT INTO users (email, username, pass) VALUES (?, ?, ?)"
