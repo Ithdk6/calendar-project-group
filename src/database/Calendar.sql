@@ -16,10 +16,10 @@ DROP TABLE if EXISTS Commands;
 
 CREATE TABLE Outbox (
     OutboxId INTEGER PRIMARY KEY,
-    outboxType VARCHAR(255) NOT NULL,
+    outboxType TEXT NOT NULL,
     AggregateId INTEGER,
-    Payload VARCHAR(255),
-    CreatedAt VARCHAR(255),
+    Payload TEXT,
+    CreatedAt TEXT,
     Processed INTEGER DEFAULT 0
 );
 
@@ -29,32 +29,33 @@ CREATE TABLE Commands  (
 
 CREATE TABLE Users(
   Uid INTEGER PRIMARY KEY AUTOINCREMENT,
-  username VARCHAR(255) NOT NULL,
-  pass VARCHAR(255) NOT NULL
+  email TEXT NOT NULL,
+  username TEXT NOT NULL,
+  pass TEXT NOT NULL
 );
 
 CREATE TABLE Groups(
   Gid INTEGER PRIMARY KEY AUTOINCREMENT,
-  Gname VARCHAR(255) NOT NULL,
+  Gname TEXT NOT NULL,
   constraint unique_groupname unique (Gname)
 );
 
 CREATE TABLE Calendar(
   Cid INTEGER PRIMARY KEY AUTOINCREMENT,
-  Cname VARCHAR(255) NOT NULL
+  Cname TEXT NOT NULL
 );
 
 CREATE TABLE EventCore(
   Eid INTEGER PRIMARY KEY AUTOINCREMENT,
-  Title VARCHAR(255) NOT NULL,
+  Title TEXT NOT NULL,
   Description TEXT
 );
 
 --descriptor table for event via splitting the original event table into a core and a time table
 CREATE TABLE EventTime(
   EventID INTEGER PRIMARY KEY,
-  StartTime VARCHAR(255) not NULL,
-  EndTime VARCHAR(255) not NULL,
+  StartTime TEXT not NULL,
+  EndTime TEXT not NULL,
   Day INTEGER Not NULL,
   Month INTEGER Not NULL,
   EYear INTEGER Not NULL
@@ -62,7 +63,7 @@ CREATE TABLE EventTime(
 
 CREATE TABLE Type(
   Tid Integer PRIMARY KEY AUTOINCREMENT,
-  Tname VARCHAR(255) NOT NULL,
+  Tname TEXT NOT NULL,
   constraint unique_typename unique (Tname)
 );
 
@@ -71,8 +72,8 @@ CREATE TABLE Availability(
   Day INTEGER Not NULL,
   Month INTEGER Not NULL,
   AYear INTEGER Not NULL,
-  StartTime VARCHAR(255) NOT NULL,
-  EndTime VARCHAR(255) Not NULL
+  StartTime TEXT NOT NULL,
+  EndTime TEXT Not NULL
 );
 
 --mapping table for calendar and group

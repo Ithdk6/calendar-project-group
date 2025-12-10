@@ -1,6 +1,5 @@
 //actual file routes will be finalized later
 import {db} from '../database/databaseAggregateFunctions.js';
-import {generateID} from '../astro/utils';
 
 export async function post({request}) {
 	const command = await request.json();

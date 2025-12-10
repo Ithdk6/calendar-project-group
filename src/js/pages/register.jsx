@@ -14,10 +14,43 @@ const RegisterPage = () => {
         setFormData({...formData, [e.target.name]: e.target.value});
     };
 
+    const [isloading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        //add database functionality here
-        console.log('Registering: ', formData);
+        setIsLoading(true);
+        setError('');
+
+        if (formData.password !== formData.password_confirmation) {
+            setError('Passwords do not match.');
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:3001/api/add_user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData);
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Registration failed');
+            }
+
+            console.log('Registration successful');
+            navigate('/signin');
+        }
+        catch (err) {
+            setError(err.message);
+        }
+        finally {
+            setIsLoading(false);
+        }
     };
 
     return (

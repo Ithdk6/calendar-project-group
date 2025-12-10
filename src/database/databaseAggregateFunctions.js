@@ -40,6 +40,44 @@ class databaseClass {
         await this.runQuery(sql, [type, aggregateId, JSON.stringify(payload), createdAt, 0]);
     }
     //creates an event with outbox pattern implemented
+    async createUserWithOutbox(username, password, Email) {
+
+        //Start Transaction
+        await this.runQuery("BEGIN TRANSACTION");
+
+        try {
+            //save Command ID in database
+            const sqlCommand = "INSERT INTO Commands (CommandID) VALUES (?)";
+            await db.runQuery(sqlCommand, [command.commandID]);
+
+            //Insert into users
+            const sqlUser = "INSERT INTO users (email, username, pass) VALUES (?, ?, ?)"
+            const newUserID = await this.runQuery(sqlUser, [Email, username, password]);
+
+            //Insert into Outbox (Using the new user ID)
+            const outboxPayload = {
+                userId: newUserID,
+                password: password,
+                email: Email,
+                status: 'Created'
+            };
+
+            const sqlOutbox = "INSERT INTO Outbox (Type, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
+            await this.runQuery(sqlOutbox, ['UserCreated', newUserID, JSON.stringify(outboxPayload), new Date().toISOString(), 0]);
+
+            // Commit Transaction
+            await this.runQuery("COMMIT");
+
+            return newUserID;
+
+        } catch (err) {
+            console.error("Transaction failed, rolling back", err);
+            await this.runQuery("ROLLBACK");
+            throw err;
+        }
+    }
+
+    //creates an event with outbox pattern implemented
     async createEventWithOutbox(userId, groupId, eventTitle, description, dateTime, type) {
 
         const dateObj = new Date(dateTime);
