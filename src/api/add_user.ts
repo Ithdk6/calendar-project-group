@@ -2,7 +2,13 @@
 import { db } from '../database/databaseAggregateFunctions.js';
 
 export async function post({ request }) {
-	const command = await request.json();
+	//in case of a bad command json
+	let command;
+	try {
+		command = await request.json();
+	} catch (e) {
+		return new Response(JSON.stringify({ error: 'Invalid JSON format' }), { status: 400 });
+	}
 
 	//idempotency check
 	try {

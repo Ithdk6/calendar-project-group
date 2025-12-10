@@ -35,6 +35,8 @@ class databaseClass {
         });
     }
 
+
+
     async addOutbox(type, aggregateId, payload, createdAt) {
         const sql = "INSERT INTO Outbox (Type, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
         await this.runQuery(sql, [type, aggregateId, JSON.stringify(payload), createdAt, 0]);

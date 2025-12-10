@@ -8,10 +8,49 @@ const Signin = () => {
     const [pword, setPword] = useState('');
     const navigate = useNavigate();
 
+    const [error, setError] = useState(null); 
+    const [isLoading, setIsLoading] = useState(false);
     const handleSubimt = (e) => {
         e.preventDefault();
-        //add sign in logic later
-        console.log('Signing in with:', {email, pword});
+        
+        setError(null);
+        setIsLoading(true);
+
+
+        const commandId = crypto.randomUUID();
+
+        try {
+            const response = await fetch('../../api/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    commandId: commandId,
+                    payload: {
+                        email: email,
+                        password: pword
+                    }
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Something went wrong');
+            }
+            console.log('Login successful, User ID:', data.userId);
+
+            localStorage.setItem('userId', data.userId);
+
+            navigate('/calendar');
+        }
+        catch (err) {
+            setError(err.message);
+        }
+        finally {
+            setIsLoading(false);
+        }
     };
 
     const handleRegister = () => {

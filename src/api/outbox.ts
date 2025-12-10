@@ -1,5 +1,5 @@
-import {db} from '../database/databaseAggregateFunctions'
-import {Kafka} from 'kafkajs'
+import { db } from '../database/databaseAggregateFunctions';
+import { Kafka } from 'kafkajs';
 
 const kafka = new Kafka({
     clientId: "calendar-service",
@@ -9,8 +9,8 @@ const kafka = new Kafka({
 const producer = kafka.producer();
 
 async function publishOutbox() {
-    const sqlCommand = "SELECT * FROM Outbox WHERE Processed = 0 ORDER BY CreatedAt ASC"
-	const outboxs = await db.runQuery(sqlCommand)
+    const sqlCommand = "SELECT * FROM Outbox WHERE Processed = 0 ORDER BY CreatedAt ASC";
+    const outboxs = await db.runQuery(sqlCommand);
 
 	for (const ob of outboxs) {
 		await producer.send({
@@ -20,10 +20,10 @@ async function publishOutbox() {
             ]
         });
 
-        const sqlOutbox = `UPDATE Outbox set Processed = 1 WHERE outboxId = ob.OutboxId}`
-        await db.runQuery(sqlOutbox)
+        const sqlOutbox = `UPDATE Outbox SET Processed = 1 WHERE outboxId = ?`;
+        await db.runQuery(sqlOutbox, [ob.OutboxId]);
 
-        console.log(`Published and processed outbox entry ${ob.OutboxId}`)
+        console.log(`Published and processed outbox entry ${ob.OutboxId}`);
 	}
 }
 
