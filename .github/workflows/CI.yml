@@ -2,7 +2,6 @@ name: Continuous Integration
 
 on:
   pull_request:
-
   push:
     branches: [ dev ]
 
@@ -11,16 +10,43 @@ jobs:
     name: JavaScript Tests
     runs-on: ubuntu-latest
     permissions:
-        contents: read
+      contents: read
 
     steps:
       - name: Checkout
         id: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         id: setup-node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci
+
+  run-tests:
+    name: database tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: database_testing.js run
+        id: database-testing
+        run: |
+            node Testing/Database_testing.js
+
           
