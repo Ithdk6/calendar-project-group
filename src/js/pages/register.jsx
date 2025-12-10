@@ -22,6 +22,7 @@ const RegisterPage = () => {
         setIsLoading(true);
         setError('');
 
+        const commandId = crypto.randomUUID();
         if (formData.password !== formData.password_confirmation) {
             setError('Passwords do not match.');
             setIsLoading(false);
@@ -34,7 +35,14 @@ const RegisterPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData);
+                body: JSON.stringify({
+                    commandId: commandId,
+                    payload: {
+                        name: formData.name,
+                        password: formData.password,
+                        email: formData.email
+                    },
+                }),
             });
             const data = await response.json();
 

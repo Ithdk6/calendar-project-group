@@ -15,11 +15,12 @@ export async function post({ request }) {
 		const newUser = await db.createUserWithOutbox(
 			command.payload.name,
 			command.payload.email,
-			command.payload.password
+			command.payload.password,
+			command.commandId
 		);
 
 		if (!newUser) {
-			return new Response(JSON.stringify({ status: 'already_processed' }), { status: 200 });
+			return new Response(JSON.stringify({ status: 'Username taken' }), { status: 409 });
 		}
 		//outbox created inside the database class instance via the createEventWithOutbox
 		return new Response(JSON.stringify({ status: 'accepted', commandId: command.commandId, userId: newUser }), { status: 202 });

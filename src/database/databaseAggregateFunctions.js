@@ -42,7 +42,7 @@ class databaseClass {
         await this.runQuery(sql, [type, aggregateId, JSON.stringify(payload), createdAt, 0]);
     }
     //creates an event with outbox pattern implemented
-    async createUserWithOutbox(username, password, Email) {
+    async createUserWithOutbox(username, password, Email, commandID) {
 
         //Start Transaction
         await this.runQuery("BEGIN TRANSACTION");
@@ -50,7 +50,7 @@ class databaseClass {
         try {
             //save Command ID in database
             const sqlCommand = "INSERT INTO Commands (CommandID) VALUES (?)";
-            await this.runQuery(sqlCommand, [command.commandID]);
+            await this.runQuery(sqlCommand, [commandID]);
 
             //Insert into users
             const sqlUser = "INSERT INTO users (email, username, pass) VALUES (?, ?, ?)"
