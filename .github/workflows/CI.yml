@@ -24,7 +24,7 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install ci
 
   run-tests:
     name: database tests
@@ -42,7 +42,7 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install ci
 
       - name: database_testing.js run
         id: database-testing
