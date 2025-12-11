@@ -3,7 +3,6 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "start": "concurrently \"astro dev\" \"node server.cjs\" \"node server/index.ts\"",
     "dev": "concurrently \"astro dev\" \"node server.cjs\"",
     "build": "astro build",
     "preview": "astro preview",
