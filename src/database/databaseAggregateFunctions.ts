@@ -8,14 +8,8 @@ export class DatabaseAggregateFunctions {
     this.db = new sqlite3.Database(`./src/database/${name}.db`, (err: Error | null) => {
       if (err)
         console.error(err.message);
-      else {
-        this.db.serialize( () => {
-          this.db.all("select name from sqlite_master where type='table'", function (err, tables) {
-            console.log(tables);
-          });
-        });
+      else
         console.log(`Connected to the SQLite database: ./${name}.db.`);
-      }
     });
   }
 
