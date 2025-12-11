@@ -1,4 +1,4 @@
-const { db } = require('../../database/databaseAggregateFunctions.ts');
+import { db } from '../../database/databaseAggregateFunctions';
 import Kafka from 'kafkajs';
 
 const kafka = new Kafka.Kafka({

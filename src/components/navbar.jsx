@@ -7,7 +7,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const result = await fetch('http://localhost:3000/pages/api/_get_user', {credentials: 'include'});
+        const result = await fetch('http://localhost:3000/pages/api/get_user', {credentials: 'include'});
         const data = await result.json();
         if (result.ok)
           setUser(data.user);
@@ -29,7 +29,7 @@ const Navbar = () => {
 
   const handleSignout = async () => {
     try {
-      const response = await fetch('http://localhost:3000/pages/api/_signout', {
+      const response = await fetch('http://localhost:3000/pages/api/signout', {
         method: 'POST',
         credentials: 'include',
       });

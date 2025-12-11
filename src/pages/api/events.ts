@@ -1,5 +1,5 @@
-const { db } = require('../../database/databaseAggregateFunctions.ts');
-const jwt = require('jsonwebtoken');
+import { db } from '../../database/databaseAggregateFunctions';
+import jwt from 'jsonwebtoken';
 import type { APIRoute } from 'astro';
 
 const SECRET = process.env.JWT_SECRET || 'supersecret-key-that-no-one-knows';

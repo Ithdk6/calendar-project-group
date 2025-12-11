@@ -1,5 +1,5 @@
-const { db } = require('../../database/databaseAggregateFunctions.ts');
-const jwt = require('jsonwebtoken');
+import { db } from '../../database/databaseAggregateFunctions';
+import jwt from 'jsonwebtoken';
 import type { APIRoute } from 'astro';
 
 const SECRET = process.env.JWT_SECRET || 'supersecret-key-that-no-one-knows';
@@ -19,7 +19,8 @@ export const POST: APIRoute = async ({ request }) => {
     // Check if command has already been run
     const sqlCheck = "SELECT CommandID FROM Commands WHERE CommandID = ?";
     const exists = await db.getQuery(sqlCheck, [command.commandId]);
-    if (exists.length > 0) {
+
+    if (exists?.length > 0) {
       return new Response(JSON.stringify({ status: 'already_processed' }), { status: 200 });
     }
 
@@ -32,7 +33,7 @@ export const POST: APIRoute = async ({ request }) => {
     const sql = "SELECT Uid, pass FROM users WHERE email = ?";
     const rows = await db.getQuery(sql, [command.payload.email]);
 
-    if (rows.length === 0) {
+    if (rows?.length === 0) {
       return new Response(JSON.stringify({ error: 'Invalid credentials' }), { status: 401 });
     }
 

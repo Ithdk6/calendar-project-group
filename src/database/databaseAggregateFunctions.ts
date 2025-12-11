@@ -5,11 +5,17 @@ export class DatabaseAggregateFunctions {
   db: sqlite3.Database;
 
   constructor(name: string) {
-    this.db = new sqlite3.Database(`./${name}.db`, (err: Error | null) => {
+    this.db = new sqlite3.Database(`./src/database/${name}.db`, (err: Error | null) => {
       if (err)
         console.error(err.message);
-      else
-        console.log('Connected to the SQLite database.');
+      else {
+        this.db.serialize( () => {
+          this.db.all("select name from sqlite_master where type='table'", function (err, tables) {
+            console.log(tables);
+          });
+        });
+        console.log(`Connected to the SQLite database: ./${name}.db.`);
+      }
     });
   }
 
@@ -180,18 +186,17 @@ export class DatabaseAggregateFunctions {
     const sqlIncludes = "INSERT INTO Included (Userid, Groupid) VALUES (?, ?)";
 
     try{
-    //Insert the new group into Groups table
-    const result = await this.runQuery(sqlGroup, [name]);
-    //console.log(`Group ${name} added to the database.`);
+      //Insert the new group into Groups table
+      const result = await this.runQuery(sqlGroup, [name]);
+      //console.log(`Group ${name} added to the database.`);
 
-    // Get the ID of the newly created group
-    const GroupID = result.id;
-    //console.log(`The Group ID is ${GroupID}`);
+      // Get the ID of the newly created group
+      const GroupID = result.id;
+      //console.log(`The Group ID is ${GroupID}`);
 
-    //Insert the mapping of group and user into Included table
-    await this.runQuery(sqlIncludes, [userID, GroupID]);
-    //console.log(`User ${userID} added to Group ${GroupID}.`);
-
+      //Insert the mapping of group and user into Included table
+      await this.runQuery(sqlIncludes, [userID, GroupID]);
+      //console.log(`User ${userID} added to Group ${GroupID}.`);
     } catch (err){
       console.error("Error adding group:", err);
     }
@@ -202,11 +207,9 @@ export class DatabaseAggregateFunctions {
     const sqlIncludes = "INSERT INTO Included (Userid, Groupid) VALUES (?, ?)";
 
     try{
-
-    //map a new user to a group via included table
-    await this.runQuery(sqlIncludes, [UserID, GroupID]);
-    //console.log(`User ${userID} added to Group ${GroupID}.`);
-
+      //map a new user to a group via included table
+      await this.runQuery(sqlIncludes, [UserID, GroupID]);
+      //console.log(`User ${userID} added to Group ${GroupID}.`);
     } catch (err){
       console.error("Error adding group:", err);
     }
@@ -238,7 +241,6 @@ export class DatabaseAggregateFunctions {
     const sqlEType = "INSERT INTO Type (Tname) VALUES (?)";
     const sqlEventType = "INSERT INTO EventType (TypeID, EventID) VALUES (?, ?)";
     try {
-
       const result = await this.runQuery(sqlECore, [ETitle, Description]);
       //console.log(`Event ${ETitle} added to EventCore.`);
 
@@ -555,3 +557,6 @@ export class DatabaseAggregateFunctions {
     return row.GroupID;
   }
 }
+
+// This is way better than instantiating the db class in every endpoint
+export const db = new DatabaseAggregateFunctions('calendar');

@@ -1,7 +1,5 @@
-import { DatabaseAggregateFunctions } from '../../database/databaseAggregateFunctions';
+import { db } from '../../database/databaseAggregateFunctions';
 import type { APIRoute } from 'astro';
-
-const db = new DatabaseAggregateFunctions('calendar');
 
 export const POST: APIRoute = async ({ request }) => {
   // In case of a bad JSON

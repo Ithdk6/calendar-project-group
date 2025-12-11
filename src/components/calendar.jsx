@@ -22,7 +22,7 @@ const Calendar = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const result = await fetch('../pages/api/_get_user', {credentials: 'include'});
+        const result = await fetch('/api/get_user', {credentials: 'include'});
         const data = await result.json();
         if (result.ok) setUser(data.user);
         else console.error('Error fetching user data: ', data.error);
@@ -36,14 +36,14 @@ const Calendar = () => {
   })
 
   useEffect(() => {
-    fetch('../pages/api/_events', {credentials: 'include'})
+    fetch('/api/events', {credentials: 'include'})
       .then((res) => res.json())
       .then((data) => setEvents(data))
       .catch((error) => console.log('Failed to fetch events:', error));
   }, []);
 
   const scheduleNotification = async (text, status, duration, scheduleTime, userId) => {
-    const response = await fetch('../pages/api/queue_notification', {
+    const response = await fetch('/api/queue_notification', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text, status, duration, scheduleTime, userId }),
@@ -74,7 +74,7 @@ const Calendar = () => {
     try {
 
       //save event to database
-      const response = await fetch('http://localhost:3000/pages/api/_events', {
+      const response = await fetch('http://localhost:3000/pages/api/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

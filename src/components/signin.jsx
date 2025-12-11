@@ -19,7 +19,7 @@ const Signin = () => {
     }
 
     try{
-      const result = JSON.parse(await fetch('../pages/api/_find_user', {
+      const result = JSON.parse(await fetch('/api/find_user', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(command),
@@ -32,15 +32,12 @@ const Signin = () => {
         console.log("Logged in successfully: ", data)
         globalThis.location.href = '/';
       }
-      else if (result.status === 'already processed') {
+      else if (result.status === 'already processed')
         setError('This command has already been processed')
-      }
-      else if (result.error) {
+      else if (result.error)
         setError(data.error);
-      }
-      else {
+      else
         setError('Log in failed. Please try again.');
-      }
     }
     catch (err) {
       console.log("Failed to send login command: ", err)

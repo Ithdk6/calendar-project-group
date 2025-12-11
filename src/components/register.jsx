@@ -10,8 +10,8 @@ const RegisterPage = () => {
     password_confirmation: '',
   });
 
-  const handleChange = (e) => {
-    setFormData({...formData, [e.target.name]: e.target.value});
+  const handleChange = (event) => {
+    setFormData({...formData, [event.target.name]: event.target.value});
   };
 
   const [isloading, setIsLoading] = useState(false);
@@ -38,7 +38,7 @@ const RegisterPage = () => {
     };
 
     try{
-      const result = JSON.parse(await fetch('../pages/api/add_user', {
+      const result = JSON.parse(await fetch('/api/add_user', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(command),
