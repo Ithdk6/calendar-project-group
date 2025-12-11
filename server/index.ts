@@ -1,7 +1,19 @@
 import express from 'express';
 import WebSocket, { WebSocketServer } from 'ws';
 import cron from 'node-cron';
-import http from 'http';
+import http from 'node:http';
+
+interface Notification {
+  text: string,
+  status: string,
+  duration: number,
+  scheduleTime: Date,
+  userId: string,
+}
+
+interface User extends WebSocket {
+  userId: string | undefined,
+}
 
 const app = express();
 const port = 3001;
@@ -9,12 +21,12 @@ const port = 3001;
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 const clients = new Map();
-const notificationQueue = []; // You had this referenced but not defined
+let notificationQueue: Notification[] = [];
 
 app.use(express.json());
 
-wss.on('connection', (ws, req) => {
-  const userId = req.url.split('?')[1]?.split('=')[1]; 
+wss.on('connection', (ws: User, req: http.IncomingMessage) => {
+  const userId = req.url?.split('?')[1]?.split('=')[1]; 
   ws.userId = userId;
 
   console.log(`Connection from '${userId}'`);
@@ -27,6 +39,9 @@ wss.on('connection', (ws, req) => {
   ws.on('close', () => {
     clients.delete(userId);
   });
+
+  if (!ws.userId)
+    ws.close();
 });
 
 // Add a new notification to the queue
@@ -48,7 +63,7 @@ app.post('/add-notification', (req, res) => {
   res.status(200).json({ message: 'Notification scheduled', notification });
 });
 
-function sendNotificationToClient(userId, notification) {
+function sendNotificationToClient(userId: string, notification: string) {
   const client = clients.get(userId);
 
   if (client && client.readyState === WebSocket.OPEN) {
@@ -64,7 +79,7 @@ cron.schedule('* * * * *', () => {
 
   notificationQueue.forEach((notification) => {
     if (notification.scheduleTime <= now) {
-      sendNotificationToClient(notification.userId, notification);
+      sendNotificationToClient(notification.userId, JSON.stringify(notification));
 
       const index = notificationQueue.indexOf(notification);
       notificationQueue.splice(index, 1);
