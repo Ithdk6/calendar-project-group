@@ -1,1 +1,3 @@
 node_modules/*
+calendar.db
+.astro
