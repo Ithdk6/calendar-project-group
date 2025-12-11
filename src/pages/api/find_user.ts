@@ -31,13 +31,11 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Find user by email
     const sql = "SELECT Uid, pass FROM users WHERE email = ?";
-    const rows = await db.getQuery(sql, [command.payload.email]);
+    const user = await db.getQuery(sql, [command.payload.email]);
 
-    if (rows?.length === 0) {
+    if (!user) {
       return new Response(JSON.stringify({ error: 'Invalid credentials' }), { status: 401 });
     }
-
-    const user = rows[0];
 
     // Check password (no hashing for now)
     if (user.pass !== command.payload.password) {
@@ -55,7 +53,7 @@ export const POST: APIRoute = async ({ request }) => {
     const headers = new Headers();
     headers.append(
       'Set-Cookie',
-      `session=${token}; HttpOnly; path=/; Max-Age=${2*24*60*60}; Same-Site=Strict`
+      `session=${token}; HttpOnly; path=/; Max-Age=${2 * 24 * 60 * 60}; Same-Site=Strict`
     );
 
     return new Response(
@@ -65,6 +63,6 @@ export const POST: APIRoute = async ({ request }) => {
 
   } catch (error) {
     console.error("Database Error:", error);
-    return new Response(JSON.stringify({ error: error}), { status: 500 });
+    return new Response(JSON.stringify({ error: error }), { status: 500 });
   }
 }
