@@ -1,5 +1,7 @@
-import databaseClass as db from '../../database/databaseAggregateFunctions.ts';
+import { DatabaseAggregateFunctions } from '../../database/databaseAggregateFunctions';
 import type { APIRoute } from 'astro';
+
+const db = new DatabaseAggregateFunctions('calendar');
 
 export const POST: APIRoute = async ({ request }) => {
   // In case of a bad JSON
