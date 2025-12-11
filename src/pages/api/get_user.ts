@@ -4,7 +4,7 @@ import type { APIRoute } from 'astro';
 
 const SECRET = process.env.JWT_SECRET || 'supersecret-key-that-no-one-knows';
 
-export const POST: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     const cookieHeader = request.headers.get('cookie') || '';
     const cookies = Object.fromEntries(
@@ -33,7 +33,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const sql = 'SELECT Uid, email, name FROM Users WHERE Uid = ?';
+    const sql = 'SELECT Uid, email, username FROM Users WHERE Uid = ?';
     const rows = await db.getQuery(sql, [userId]);
 
     if (rows.length === 0) {

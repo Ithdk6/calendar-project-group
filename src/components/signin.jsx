@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import NavBar from './navbar';
 import '../css/signin.css'
 
@@ -15,26 +15,26 @@ const Signin = () => {
 
     const command = {
       commandId: crypto.randomUUID(),
-      payload: {email, password: pword},
+      payload: { email, password: pword },
     }
 
-    try{
-      const result = JSON.parse(await fetch('/api/find_user', {
+    try {
+      const result = await fetch('/api/find_user', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(command),
         credentials: 'include'
-      }));
+      });
 
       const data = await result.json();
 
-      if (result.status === 'accepted') {
+      if (data.status === 'accepted') {
         console.log("Logged in successfully: ", data)
         globalThis.location.href = '/';
       }
-      else if (result.status === 'already processed')
+      else if (data.status === 'already processed')
         setError('This command has already been processed')
-      else if (result.error)
+      else if (data.error)
         setError(data.error);
       else
         setError('Log in failed. Please try again.');

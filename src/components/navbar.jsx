@@ -1,14 +1,16 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/navbar.css';
 
 const Navbar = () => {
   const [user, setUser] = React.useState(null);
 
+  // TODO: useEffect is not running
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const result = await fetch('http://localhost:3000/pages/api/get_user', {credentials: 'include'});
+        const result = await fetch('/api/get_user', { credentials: 'include' });
         const data = await result.json();
+
         if (result.ok)
           setUser(data.user);
         else
@@ -29,7 +31,7 @@ const Navbar = () => {
 
   const handleSignout = async () => {
     try {
-      const response = await fetch('http://localhost:3000/pages/api/signout', {
+      const response = await fetch('/api/signout', {
         method: 'POST',
         credentials: 'include',
       });
@@ -57,7 +59,7 @@ const Navbar = () => {
       <div className="auth-section">
         {user ? (
           <>
-            <span className = "user-name">Hello, {user.name}</span>
+            <span className="user-name">Hello, {user.name}</span>
             <button className="signout" onClick={handleSignout}>
               Sign out
             </button>

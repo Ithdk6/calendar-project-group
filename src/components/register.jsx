@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import NavBar from './navbar';
 import '../css/register.css'
 
@@ -11,7 +11,7 @@ const RegisterPage = () => {
   });
 
   const handleChange = (event) => {
-    setFormData({...formData, [event.target.name]: event.target.value});
+    setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
   const [isloading, setIsLoading] = useState(false);
@@ -37,25 +37,25 @@ const RegisterPage = () => {
       }
     };
 
-    try{
-      const result = JSON.parse(await fetch('/api/add_user', {
+    try {
+      const result = await fetch('/api/add_user', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(command),
         credentials: 'include'
-      }));
+      });
 
       const data = await result.json();
 
-      if (result.status === "Username taken") {
+      if (data.status === "Username taken") {
         setError("Email already in use");
       }
       else {
         console.log("API response: ", data)
-        globalThis.location.href = '/login'
+        globalThis.location.href = '/signin'
       }
     }
-    catch(err) {
+    catch (err) {
       console.log("Failed to send registration command: ", err)
       setError("Registration failed")
     }

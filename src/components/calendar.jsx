@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import Navbar from './navbar';
@@ -11,7 +11,7 @@ const Calendar = () => {
   const [user, setUser] = useState(null);
   const [newEvent, setNewEvent] = useState({
     title: '',
-    date:'',
+    date: '',
     time: '',
     type: 'Work', //Default to work
   });
@@ -22,7 +22,7 @@ const Calendar = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const result = await fetch('/api/get_user', {credentials: 'include'});
+        const result = await fetch('/api/get_user', { credentials: 'include' });
         const data = await result.json();
         if (result.ok) setUser(data.user);
         else console.error('Error fetching user data: ', data.error);
@@ -36,7 +36,7 @@ const Calendar = () => {
   })
 
   useEffect(() => {
-    fetch('/api/events', {credentials: 'include'})
+    fetch('/api/events', { credentials: 'include' })
       .then((res) => res.json())
       .then((data) => setEvents(data))
       .catch((error) => console.log('Failed to fetch events:', error));
@@ -44,9 +44,9 @@ const Calendar = () => {
 
   const scheduleNotification = async (text, status, duration, scheduleTime, userId) => {
     const response = await fetch('/api/queue_notification', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, status, duration, scheduleTime, userId }),
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, status, duration, scheduleTime, userId }),
     });
 
     const data = await response.json();
@@ -74,7 +74,7 @@ const Calendar = () => {
     try {
 
       //save event to database
-      const response = await fetch('http://localhost:3000/pages/api/events', {
+      const response = await fetch('/api/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -120,7 +120,7 @@ const Calendar = () => {
           <li>Personal</li>
           <li>Family</li>
         </ul>
-        </aside>
+      </aside>
 
       <Notification />
 
@@ -150,7 +150,7 @@ const Calendar = () => {
                 id="title"
                 type="text"
                 value={newEvent.title}
-                onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                 required
               />
               <label htmlFor="date">Date</label>
@@ -158,7 +158,7 @@ const Calendar = () => {
                 id="date"
                 type="date"
                 value={newEvent.date}
-                onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
+                onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
                 required
               />
               <label htmlFor="time">Time</label>
@@ -166,14 +166,14 @@ const Calendar = () => {
                 id="time"
                 type="time"
                 value={newEvent.time}
-                onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
+                onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
                 required
               />
               <label htmlFor="type">Type</label>
               <select
                 id="type"
                 value={newEvent.type}
-                onChange={(e) => setNewEvent({...newEvent, type: e.target.value})}
+                onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
               >
                 <option value="Work">Work</option>
                 <option value="Personal">Personal</option>
