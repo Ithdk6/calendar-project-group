@@ -1,60 +1,58 @@
 import React, {useState} from 'react'
-import NavBar from '../parts/navbar';
-import {useNavigate} from 'react-router-dom';
+import NavBar from './navbar';
 import '../css/signin.css'
 
 const Signin = () => {
     const [email, setEmail] = useState('');
     const [pword, setPword] = useState('');
-    const navigate = useNavigate();
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const [error, setError] = useState(null); 
-    const [isLoading, setIsLoading] = useState(false);
     const handleSubimt = async (e) => {
         e.preventDefault();
-        
-        setError(null);
-        setIsLoading(true);
+        setError('');
+        setLoading(true);
 
+        const command = {
+            commandId: crypto.randomUUID(),
+            payload: {email, password: pword},
+        }
 
-        const commandId = crypto.randomUUID();
-
-        try {
-            const response = await fetch('/api/signin', {
+        try{
+            const result = await fetch('http://localhost:3000/pages/api/_find_user', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    commandId: commandId,
-                    payload: {
-                        email: email,
-                        password: pword
-                    }
-                }),
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(command),
+                credentials: 'include'
             });
 
-            const data = await response.json();
+            const data = await result.json();
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Something went wrong');
+            if (result.status === 'accepted') {
+                console.log("Logged in successfully: ", data)
+                window.location.href = '/';
             }
-            console.log('Login successful, User ID:', data.userId);
-
-            localStorage.setItem('userId', data.userId);
-
-            navigate('/calendar');
+            else if (result.status === 'already processed') {
+                setError('This command has already been processed')
+            }
+            else if (result.error) {
+                setError(data.error);
+            }
+            else {
+                setError('Log in failed. Please try again.');
+            }
         }
         catch (err) {
-            setError(err.message);
+            console.log("Failed to send login command: ", err)
+            setError("Network error. Please try again.")
         }
         finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
     const handleRegister = () => {
-        navigate('/register');
+        window.location.href = '/register';
     }
 
     return (

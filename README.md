@@ -1,84 +1,43 @@
-# SyncUp
-### Team members
-**Drake Hoffmann William Thomsen Ian Heathcote**
+# Astro Starter Kit: Minimal
 
-## Project Description
-### Introduction
+```sh
+npm create astro@latest -- --template minimal
+```
 
-Our application plans to address the problem of having something else going on when people want to meet or collaborate. This is a common problem when planning events between friends or meetings between colleagues. It will make planning simpler by finding common time.
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
-### Objectives
+## 🚀 Project Structure
 
--   Provide an easy way to store and edit dates of important events or deadlines
-    
--   Allows for the creation and syncing of group calendars
-    
--   Add timeframes for each day
-    
+Inside of your Astro project, you'll see the following folders and files:
 
-### Scope
-   **Will include:** 
+```text
+/
+├── public/
+├── src/
+│   └── pages/
+│       └── index.astro
+└── package.json
+```
 
--   Personal calendar editing & saving
-    
--   Sharing/syncing with others
-    
--   Categories
-    
+Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
 
--   Work
-    
--   School
-    
--   Personal
-    
--   Etc.
-    
+There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
 
--   Choose whether or not to share personal calendar’s event content, or just “busy” status  
-      
-    
-  **Won’t include:**
-    
+Any static assets, like images, can be placed in the `public/` directory.
 
--   GPS/location sharing
-    
--   Messaging
-    
--   LLMs
-    
+## 🧞 Commands
 
-### Proposed Solution
+All commands are run from the root of the project, from a terminal:
 
-Our application is a simple calendar logging system. It allows users to create events on certain dates and times to simplify scheduling. It will help them plan events together via syncing group calendars together. The ability to create groups will also be included. The application is going to be web based so it can run in the browser. It will keep track of all users and what groups they are a part of via a small database. The target users are families, friend groups, and small projects that need planned meetings/for deadlines. It will be a great organizational tool for anyone to use. And since we are using sqlite3 it works wonderfully as a personal calendar.
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-### Technology Stack
+## 👀 Want to learn more?
 
--   NodeJS
-    
--   Astro framework
-    
--   sqlite3
-    
--   Languages:
-    
-
--   HTML
-    
--   CSS
-    
--   JS
-    
--   Typescript
-    
--   SQL  
-      
-    
-
-### 7. Expected Outcomes
-
--   Prototype: Personal calendar, Caldav syncing with server, rudimentary UI
-    
--   Features: Group syncing between users, event scheduling, time tables
-    
--   How it solves the problem: It is an easy and simple way to schedule and keep track of any important dates and times.
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

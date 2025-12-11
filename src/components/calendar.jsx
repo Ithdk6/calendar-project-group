@@ -1,13 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import Navbar from '../parts/navbar';
-import Notification from '../parts/notification';
+import Navbar from './navbar';
+import Notification from './notification';
 import '../css/calendar.css'
 
 const Calendar = () => {
     const [events, setEvents] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [user, setUser] = useState(null);
     const [newEvent, setNewEvent] = useState({
         title: '',
         date:'',
@@ -19,7 +20,23 @@ const Calendar = () => {
     const userId = localStorage.getItem('userId');
 
     useEffect(() => {
-        fetch('../../api/events')
+        const fetchUser = async () => {
+            try {
+                const result = await fetch('http://localhost:3000/pages/api/_get_user', {credentials: 'include'});
+                const data = await result.json();
+                if (result.ok) setUser(data.user);
+                else console.error('Error fetching user data: ', data.error);
+            }
+            catch (error) {
+                console.error('Error fetching user data: ', error);
+            }
+        }
+
+        fetchUser();
+    })
+
+    useEffect(() => {
+        fetch('http://localhost:3000/pages/api/_events', {credentials: 'include'})
             .then((res) => res.json())
             .then((data) => setEvents(data))
             .catch((error) => console.log('Failed to fetch events:', error));
@@ -36,10 +53,6 @@ const Calendar = () => {
       console.log('Notification scheduled:', data);
     };
 
-    const handleAddEvent = () => {
-        setShowModal(true);
-    };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -53,7 +66,6 @@ const Calendar = () => {
                 title: newEvent.title,
                 date: fullDateTime,
                 type: newEvent.type,
-                userId: userId, // Pass in user id
                 time: fullDateTime
             }
         };
@@ -62,10 +74,11 @@ const Calendar = () => {
         try {
 
             //save event to database
-            const response = await fetch('/api/events', {
+            const response = await fetch('http://localhost:3000/pages/api/_events', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
+                credentials: 'include'
             });
 
             if (!response.ok) {

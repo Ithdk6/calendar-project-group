@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import NavBar from '../parts/navbar';
+import NavBar from './navbar';
 import '../css/register.css'
 
 const RegisterPage = () => {
@@ -19,42 +19,45 @@ const RegisterPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
-        setError('');
 
-        const commandId = crypto.randomUUID();
         if (formData.password !== formData.password_confirmation) {
-            setError('Passwords do not match.');
-            setIsLoading(false);
+            setError("Passwords don't match");
             return;
         }
 
-        try {
-            const response = await fetch('http://localhost:3001/api/add_user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    commandId: commandId,
-                    payload: {
-                        name: formData.name,
-                        password: formData.password,
-                        email: formData.email
-                    },
-                }),
-            });
-            const data = await response.json();
+        setIsLoading(true);
+        setError('');
 
-            if (!response.ok) {
-                throw new Error(data.message || 'Registration failed');
+        const command = {
+            commandId: crypto.randomUUID(),
+            payload: {
+                name: formData.name,
+                email: formData.email,
+                password: formData.password
             }
+        };
 
-            console.log('Registration successful');
-            navigate('/signin');
+        try{
+            const result = await fetch('http://localhost:3000/pages/api/_add_user', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(command),
+                credentials: 'include'
+            })
+
+            const data = await result.json();
+
+            if (result.status === "Username taken") {
+                setError("Email already in use");
+            }
+            else {
+                console.log("API response: ", data)
+                window.location.href = '/login'
+            }
         }
-        catch (err) {
-            setError(err.message);
+        catch(err) {
+            console.log("Failed to send registration command: ", err)
+            setError("Registration failed")
         }
         finally {
             setIsLoading(false);

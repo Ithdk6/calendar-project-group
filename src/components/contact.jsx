@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import NavBar from '../parts/navbar';
+import NavBar from './navbar';
 import '../css/contact.css';
 
 const Contact = () => {

@@ -24,7 +24,7 @@ CREATE TABLE Outbox (
 );
 
 CREATE TABLE Commands  (
-    CommandID Text PRIMARY KEY,
+    CommandID Text PRIMARY KEY
 );
 
 CREATE TABLE Users(

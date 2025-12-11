@@ -1,15 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import NavBar from '../parts/navbar';
+import NavBar from './navbar';
 import '../css/homepage.css'
 
 const Homepage = () => {
-    const navigate = useNavigate();
-
-    const handleGetStarted = () => {
-        navigate('/register');
-    };
-
     return (
         <div className="homepage-container">
             <NavBar />
@@ -17,7 +10,7 @@ const Homepage = () => {
                 <header className="homepage-header">
                     <h1>Welcome to SyncUp</h1>
                     <p>Plan together. Find time. Stay organized.</p>
-                    <button className="getStarted" onClick={handleGetStarted}>Get Started</button>
+                    <button className="getStarted" onClick={() => window.location.href='/register'}>Get Started</button>
                 </header>
 
                 <section className="homepage-content">

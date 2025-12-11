@@ -1,5 +1,6 @@
-//src/database/databaseAggregateFunctions.js
-import sqlite3 from 'sqlite3';
+//src/database/databaseAggregateFunctions.cjs
+const sqlite3 = require('sqlite3').verbose();
+
 class databaseClass {
     constructor(Dname) {
         this.db = new sqlite3.Database(`./${Dname}.db`, (err) => {
@@ -38,7 +39,7 @@ class databaseClass {
 
 
     async addOutbox(type, aggregateId, payload, createdAt) {
-        const sql = "INSERT INTO Outbox (Type, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
+        const sql = "INSERT INTO Outbox (outboxType, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
         await this.runQuery(sql, [type, aggregateId, JSON.stringify(payload), createdAt, 0]);
     }
     //creates an event with outbox pattern implemented
@@ -64,7 +65,7 @@ class databaseClass {
                 status: 'Created'
             };
 
-            const sqlOutbox = "INSERT INTO Outbox (Type, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
+            const sqlOutbox = "INSERT INTO Outbox (outboxType, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
             await this.runQuery(sqlOutbox, ['UserCreated', newUserID, JSON.stringify(outboxPayload), new Date().toISOString(), 0]);
 
             // Commit Transaction
@@ -140,7 +141,7 @@ class databaseClass {
                 status: 'Created'
             };
 
-            const sqlOutbox = "INSERT INTO Outbox (Type, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
+            const sqlOutbox = "INSERT INTO Outbox (outboxType, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
             await this.runQuery(sqlOutbox, ['EventCreated', newEventID, JSON.stringify(outboxPayload), new Date().toISOString(), 0]);
 
             // Commit Transaction
@@ -555,4 +556,4 @@ class databaseClass {
 }
 
 const db = new databaseClass('calendar');
-export { db };
+module.export = { db }
