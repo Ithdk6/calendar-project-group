@@ -15,8 +15,8 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const newUser = await db.createUserWithOutbox(
       command.payload.name,
-      command.payload.email,
       command.payload.password,
+      command.payload.email,
       command.commandId
     );
 
