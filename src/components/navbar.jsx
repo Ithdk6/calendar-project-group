@@ -9,7 +9,7 @@ const Navbar = () => {
             try {
                 const result = await fetch('/api/get_user', {credentials: 'include'});
                 const data = await result.json();
-                if (result.ok) { setUser(data.rows); }
+                if (result.ok) { setUser(data.data); }
                 else { setUser(null); }
             }
             catch (error) {
