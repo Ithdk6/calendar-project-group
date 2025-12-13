@@ -2,13 +2,13 @@ const { db } = require('../src/database/databaseAggregateFunctions.cjs');
 
 async function runQuery_test(){
     try{ 
-        const sql = "SELECT * from users where username = testUser";
+        const sql = "SELECT * from Users where username = testUser";
         const addSql = "INSERT INTO users (username, email, pass) VALUES (?, ?, ?)";
         const params = ['testUser', 'testEmail@test.test', '1234512345'];
         await db.runQuery(addSql, params);
 
         const row = await new Promise((resolve, reject) => {
-            const sql = "SELECT * FROM users WHERE username = ?";
+            const sql = "SELECT * FROM Users WHERE username = ?";
             //get the inserted data
             db.db.get(sql, ['testUser'], (error, result) => {
                 if (error) reject(error);
