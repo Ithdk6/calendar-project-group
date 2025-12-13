@@ -1,24 +1,30 @@
-const { Data } = require('../src/database/databaseAggregateFunctions.cjs');
+const { db } = require('../src/database/databaseAggregateFunctions.cjs');
 
 async function runQuery_test(){
     try{
         const sql = "SELECT * from users where username = testUser";
         const addSql = "INSERT INTO users (username, email, pass) VALUES (?, ?, ?)";
         const params = ['testUser', 'testEmail@test.test', '1234512345'];
-        await Data.runQuery(addSql, params);
+        await db.runQuery(addSql, params);
 
-        const output = await Data.db.run(sql);
-        
-        //if output was not found then fail, otherwise check for correctness
-        if (output && output.length > 0) {
-            if (output.username == "testUser" && 
-                output.email === "testEmail@test.test" && 
-                output.pass === "1234512345"){
-            console.log("runQuery test passed!");
+        const row = await new Promise((resolve, reject) => {
+            const sql = "SELECT * FROM users WHERE username = ?";
+            //get the inserted data
+            db.connection.get(sql, [testUser], (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            });
+        });
+
+        //Verifications
+        if (row && row.username === 'testUser' && 
+            row.pass === '1234512345' && 
+            row.email === 'testEmail@test.test') {
+
+            console.log("Test passed!");
             process.exit(0);
-            }
         } else {
-            throw new Error("Record was not found after insertion.");
+            throw new Error("Record not found via raw driver.");
         }
     } catch (err) {
         console.error("Test failed:", err);

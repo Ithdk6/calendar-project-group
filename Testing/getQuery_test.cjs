@@ -1,13 +1,13 @@
-const { Data } = require('../src/database/databaseAggregateFunctions.cjs');
+const { db } = require('../src/dbbase/databaseAggregateFunctions.cjs');
 
 async function getQuery_test(){
     try{
         const sql = "SELECT * from users where username = ?";
         const addSql = "INSERT INTO users (username, email, pass) VALUES (?, ?, ?)";
         const params = ['testUser', 'testEmail@test.test', '1234512345'];
-        await Data.runQuery(addSql, params);
+        await db.runQuery(addSql, params);
 
-        const output = await Data.getQuery(sql, 'testUser');
+        const output = await db.getQuery(sql, 'testUser');
         
         //if output was not found then fail, otherwise check for correctness
         if (output && output.length > 0) {
