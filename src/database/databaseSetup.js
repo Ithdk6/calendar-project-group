@@ -72,6 +72,7 @@ async function readFileContent() {
 
     } catch (err) {
         console.error("Error reading file:", err.message);
+        throw new Error(`Cant find Calendar.sql at ${filePath}`);
     }
 }
 executeSetup();
