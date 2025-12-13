@@ -1,4 +1,4 @@
-const { db } = require('../src/dbbase/databaseAggregateFunctions.cjs');
+const { db } = require('../src/database/databaseAggregateFunctions.cjs');
 
 async function getQuery_test(){
     try{
