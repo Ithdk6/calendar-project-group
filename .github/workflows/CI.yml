@@ -44,11 +44,8 @@ jobs:
       - name: Install Dependencies
         run: npm install ci
       
-      - name:  List Files for Debugging
-        run: |
-          pwd
-          ls -R
-          
+      
+
       - name: Setup Database
         env:
           DB_Name: testdb.db
@@ -64,5 +61,10 @@ jobs:
           node Testing/getQuery_test.cjs
           node Testing/outbox_test.cjs
           node Testing/userWithOutbox_test.cjs
+        
+      - name:  List Files for Debugging
+        run: |
+          pwd
+          ls -R
 
           
