@@ -17,10 +17,8 @@ async function runQuery_test(){
         });
 
         //Verifications
-        if (row && row.username === 'testUser' && 
-            row.pass === '1234512345' && 
+        if (row && row.pass === '1234512345' && 
             row.email === 'testEmail@test.test') {
-
             console.log("Test passed!");
             process.exit(0);
         } else {

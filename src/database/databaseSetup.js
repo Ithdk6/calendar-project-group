@@ -14,7 +14,7 @@ async function executeSetup() {
             throw new Error("SQL setup string is empty or undefined.");
         }
 
-        const dbPath = process.env.DB_NAME || 'calendar';
+        const dbPath = process.env.DB_NAME || 'calendar.db';
 
         //connect to database or create new
         const db = await new Promise((resolve, reject) => {
