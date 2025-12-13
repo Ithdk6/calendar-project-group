@@ -61,8 +61,8 @@ jobs:
         env:
           DB_NAME: testdb.db
         run: |
-          node Testing/test_schema.cjs
-          node Testing/runQuery_test.cjs
-          node Testing/getQuery_test.cjs
-          node Testing/outbox_test.cjs
-          node Testing/userWithOutbox_test.cjs
+          node Testing/test_schema.mjs
+          node Testing/runQuery_test.mjs
+          node Testing/getQuery_test.mjs
+          node Testing/outbox_test.mjs
+          node Testing/userWithOutbox_test.mjs
