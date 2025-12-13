@@ -1,4 +1,4 @@
-import { db } from '../../database/databaseAggregateFunctions';
+import { db } from '../../database/databaseAggregateFunctions.ts';
 import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request }) => {
