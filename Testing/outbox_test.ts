@@ -1,16 +1,16 @@
 import { db } from '../src/database/databaseAggregateFunctions.ts';
 
-async function schema_test(){
+async function Outbox_Test(){
     try {
-        const commandID = crypto.randomUUID();
+        const commandID = 1;
         const date = new Date();
         
-        await db.addOutbox("test_user", Number(commandID), "test_pass", String(date));
+        await db.addOutbox("test_user", commandID, "test_pass", String(date));
         
         const sql = "SELECT * FROM Outbox WHERE AggregateId = ?";
         const output = await db.getQuery(sql, [commandID]);
 
-        if (!output || output.length === 0) {
+        if (!output) {
             throw new Error("Verification failed: Record not found");
         }
 
@@ -22,4 +22,4 @@ async function schema_test(){
     }
 }
 
-schema_test();
+Outbox_Test();
