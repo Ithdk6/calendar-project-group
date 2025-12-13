@@ -2,7 +2,7 @@ const { db } = require('../src/database/databaseAggregateFunctions.cjs');
 
 async function getQuery_test(){
     try{
-        const sql = "SELECT * from users where username = ?";
+        const sql = "SELECT * from Users where username = ?";
         const addSql = "INSERT INTO users (username, email, pass) VALUES (?, ?, ?)";
         const params = ['testUser', 'testEmail@test.test', '1234512345'];
         await db.runQuery(addSql, params);
