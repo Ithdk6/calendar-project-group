@@ -1,4 +1,4 @@
-const { db } = require('../src/database/databaseAggregateFunctions.ts');
+import { db } from '../src/database/databaseAggregateFunctions.ts';
 
 async function test_schema(){
     const sql = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';";

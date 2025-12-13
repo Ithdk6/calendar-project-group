@@ -1,4 +1,4 @@
-const { db } = require('../src/database/databaseAggregateFunctions.ts');
+import { db } from '../src/database/databaseAggregateFunctions.ts';
 
 async function runQuery_test(){
     try{
