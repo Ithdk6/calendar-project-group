@@ -7,12 +7,27 @@ export class DatabaseAggregateFunctions {
   db: sqlite3.Database;
 
   constructor(name: string) {
-    const dbPath = path.resolve(process.cwd(), `${name}`);
+    const dbPath = path.resolve(process.cwd(), `${name}.db`);
     this.db = new sqlite3.Database(dbPath, (err: Error | null) => {
       if (err)
         console.error(err.message);
       else
         console.log(`Connected to the SQLite database: ./${name}.db.`);
+    });
+  }
+
+  //gets all rows in database from sql statement
+  getAllQuery(sql: string, params: any[] = []): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.db.all(sql, params, function (this: sqlite3.RunResult, err: Error | null, rows: any) {
+        if (err) {
+          console.error("Error running sql: " + sql);
+          console.error(err.message);
+          reject(err);
+        }
+        else
+          resolve(rows || []);
+      });
     });
   }
 

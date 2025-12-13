@@ -1,4 +1,4 @@
-import { db } from '../../database/databaseAggregateFunctions';
+import { db } from '../../database/databaseAggregateFunctions.ts';
 import jwt from 'jsonwebtoken';
 import type { APIRoute } from "astro";
 
@@ -44,7 +44,7 @@ export const POST: APIRoute = async ({ request }) => {
     try {
         const sqlCheck = "SELECT CommandID FROM Commands WHERE CommandID = ?";
         const exists = await db.getQuery(sqlCheck, [command.commandId]);
-        if (exists.length > 0) {
+        if (exists) {
             return new Response(JSON.stringify({ status: 'already_processed' }), { status: 200 });
         }
 
@@ -55,7 +55,7 @@ export const POST: APIRoute = async ({ request }) => {
         }
 
         //get the user's group
-        const gID = await db.findGroupFromUser(+userId);
+        const gID = await db.findGroupFromUser(Number(userId));
 
         if (!gID) {
             return new Response(JSON.stringify({ error: 'User group not found' }), { status: 404 });
@@ -76,8 +76,8 @@ export const POST: APIRoute = async ({ request }) => {
             userId: userId,
         }), { status: 200 });
 
-    } catch (error) {
-        console.error("Database Error: ", error);
-        return new Response(JSON.stringify({ error: error || "Internal Server Error" }), { status: 500 });
+    } catch (error: any) {
+        console.error("Database Error: ", error.message);
+        return new Response(JSON.stringify({ error: error.message || "Internal Server Error" }), { status: 500 });
     }
 }
