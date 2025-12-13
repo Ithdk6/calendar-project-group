@@ -1,6 +1,6 @@
 //src/database/databaseAggregateFunctions.ts
 import sqlite3 from "sqlite3";
-import path from 'path';
+import path from 'node:path';
 
 class DatabaseAggregateFunctions {
 
@@ -572,6 +572,6 @@ class DatabaseAggregateFunctions {
 }
 
 // This is way better than instantiating the db class in every endpoint
-const dbName = process.env.DB_NAME || 'calendar.db';
+const dbName = process.env.DB_NAME || './src/database/calendar.db';
 const db = new DatabaseAggregateFunctions(dbName);
 export { db };
