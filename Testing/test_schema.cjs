@@ -17,8 +17,8 @@ async function test_schema(){
 
         // Verification logic
         const tableNames = tables.map(row => row.name);
-        if (tableNames.includes('users') && tableNames.includes('Outbox')) {
-            console.log("✅ Schema verification passed!");
+        if (tableNames.includes('Users') && tableNames.includes('Outbox')) {
+            console.log("Schema verification passed!");
         } else {
             console.error("Schema verification failed. Missing tables.");
             process.exit(1);
