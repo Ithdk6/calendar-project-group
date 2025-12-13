@@ -43,8 +43,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
-        npm install ci
-        npm install --save-dev tsx
+          npm install ci
+          npm install --save-dev tsx
 
       - name: Setup Database
         env:
