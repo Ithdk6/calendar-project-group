@@ -558,6 +558,6 @@ class databaseClass {
     }
 }
 
-const dbName = process.env.DB_NAME || 'testdb.db';
+const dbName = process.env.DB_NAME || 'calendar.db';
 const db = new databaseClass(dbName);
 module.exports = { db };
