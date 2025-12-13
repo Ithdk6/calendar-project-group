@@ -5,10 +5,10 @@ async function test_schema(){
     console.log(db);
         try{
         // Use 'all' or 'getQuery' because we expect a list of names
-        const tables = await new Promise((resolve, reject) => {
+        const tables: any = await new Promise((resolve, reject) => {
             db.db.all(sql, [], (err, rows) => {
                 if (err) reject(err);
-                else resolve(rows);
+                else resolve(rows || []);
             });
         });
 
@@ -24,7 +24,7 @@ async function test_schema(){
             process.exit(1);
         }
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error checking schema:", error.message);
         process.exit(1);
     }

@@ -7,7 +7,7 @@ async function runQuery_test(){
         const params = ['testUser', 'testEmail@test.test', '1234512345'];
         await db.runQuery(addSql, params);
 
-        const row = await new Promise((resolve, reject) => {
+        const row: any = await new Promise((resolve, reject) => {
             const sql = "SELECT * FROM Users WHERE username = ?";
             //get the inserted data
             db.db.get(sql, ['testUser'], (error, result) => {

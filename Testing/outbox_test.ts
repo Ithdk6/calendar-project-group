@@ -5,7 +5,7 @@ async function schema_test(){
         const commandID = crypto.randomUUID();
         const date = new Date();
         
-        await db.addOutbox("test_user", commandID, "test_pass", date);
+        await db.addOutbox("test_user", Number(commandID), "test_pass", String(date));
         
         const sql = "SELECT * FROM Outbox WHERE AggregateId = ?";
         const output = await db.getQuery(sql, [commandID]);

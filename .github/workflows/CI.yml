@@ -42,7 +42,9 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install ci
+        run: |
+        npm install ci
+        npm install --save-dev tsx
 
       - name: Setup Database
         env:
@@ -61,8 +63,8 @@ jobs:
         env:
           DB_NAME: testdb.db
         run: |
-          node Testing/test_schema.mjs
-          node Testing/runQuery_test.mjs
-          node Testing/getQuery_test.mjs
-          node Testing/outbox_test.mjs
-          node Testing/userWithOutbox_test.mjs
+          npx tsx Testing/test_schema.ts
+          npx tsx Testing/runQuery_test.ts
+          npx tsx Testing/getQuery_test.ts
+          npx tsx Testing/outbox_test.ts
+          npx tsx Testing/userWithOutbox_test.ts

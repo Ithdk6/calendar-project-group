@@ -3,7 +3,7 @@ import { db } from '../src/database/databaseAggregateFunctions.ts';
 async function runQuery_test(){
     try{
 
-        const output = await db.createUserWithOutbox('testUser', '1234512345', 'testEmail@test.test', 1);
+        const output = await db.createUserWithOutbox('testUser', '1234512345', 'testEmail@test.test', '1');
         
         if (!output) {
             throw new Error("Aggregate function returned false/null");
