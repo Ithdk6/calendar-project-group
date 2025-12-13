@@ -1,4 +1,4 @@
-import { db } from '../../database/databaseAggregateFunctions';
+import { db } from '../../database/databaseAggregateFunctions.ts';
 import Kafka from 'kafkajs';
 
 const kafka = new Kafka.Kafka({
@@ -10,20 +10,22 @@ const producer = kafka.producer();
 
 async function publishOutbox() {
   const sqlCommand = "SELECT * FROM Outbox WHERE Processed = 0 ORDER BY CreatedAt ASC";
-  let outboxs = [];
+  let outboxEntries: any[] = [];
 
   try {
-    outboxs = await db.getQuery(sqlCommand);
+    outboxEntries = await db.getAllQuery(sqlCommand);
   } catch (err) {
     console.error("Failed to read outbox table: ", err);
     return;
   }
 
-  for (const ob of outboxs) {
+  if (!outboxEntries || outboxEntries.length === 0) return;
+
+  for (const ob of outboxEntries) {
     try {
-      const payloadString = typeof ob.payload === "string"
-        ? ob.payload
-        : JSON.stringify(ob.payload);
+      const payloadString = typeof ob.Payload === "string"
+        ? ob.Payload
+        : JSON.stringify(ob.Payload);
 
       await producer.send({
         topic: ob.outboxType,
@@ -32,8 +34,8 @@ async function publishOutbox() {
         ]
       });
 
-      const sqlOutbox = "UPDATE Outbox set Processed = 1 WHERE outboxId = ?";
-      await db.runQuery(sqlOutbox, [ob.OutboxId]);
+      const sqlUpdate = "UPDATE Outbox set Processed = 1 WHERE outboxId = ?";
+      await db.runQuery(sqlUpdate, [ob.OutboxId]);
 
       console.log(`Published and processed outbox entry ${ob.OutboxId}`);
     } catch (err) {
@@ -43,9 +45,14 @@ async function publishOutbox() {
 }
 
 (async () => {
+  try{
   await producer.connect();
   console.log("Outbox processor started...");
   setInterval(publishOutbox, 5000); // runs every 5sec (can be changed later)
+  }
+  catch (error){
+    console.error("Failed to start Outbox processor:", error);
+  }
 })();
 
-module.exports = { publishOutbox };
+export { publishOutbox };
