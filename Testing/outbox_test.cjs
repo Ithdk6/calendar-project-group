@@ -2,31 +2,24 @@ const { db } = require('../src/database/databaseAggregateFunctions.cjs');
 
 async function schema_test(){
     try {
-        const sql = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';";
+        const commandID = crypto.randomUUID();
+        const date = new Date();
         
-        // Use 'all' or 'getQuery' because we expect a list of names
-        const tables = await new Promise((resolve, reject) => {
-            db.db.all(sql, [], (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows);
-            });
-        });
+        await db.addOutbox("test_user", commandID, "test_pass", date);
+        
+        const sql = "SELECT * FROM Outbox WHERE AggregateId = ?";
+        const output = await db.getQuery(sql, [commandID]);
 
-        console.log("Tables found in database:");
-        console.table(tables);
-
-        // Verification logic
-        const tableNames = tables.map(row => row.name);
-        if (tableNames.includes('users') && tableNames.includes('Outbox')) {
-            console.log("✅ Schema verification passed!");
-        } else {
-            console.error("❌ Schema verification failed. Missing tables.");
-            process.exit(1);
+        if (!output || output.length === 0) {
+            throw new Error("Verification failed: Record not found");
         }
 
+        console.log("Outbox test passed!");
+        process.exit(0);
     } catch (err) {
-        console.error("Error checking schema:", err.message);
+        console.error("Test failed:", err);
         process.exit(1);
     }
+}
 
 schema_test();

@@ -1,28 +1,30 @@
 const { db } = require('../src/dbbase/databaseAggregateFunctions.cjs');
 
 async function getQuery_test(){
-    try{
-        const sql = "SELECT * from users where username = ?";
-        const addSql = "INSERT INTO users (username, email, pass) VALUES (?, ?, ?)";
-        const params = ['testUser', 'testEmail@test.test', '1234512345'];
-        await db.runQuery(addSql, params);
-
-        const output = await db.getQuery(sql, 'testUser');
+    const sql = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';";
         
-        //if output was not found then fail, otherwise check for correctness
-        if (output && output.length > 0) {
-            const user = output[0];
-            if (user.username == "testUser" && 
-                user.email === "testEmail@test.test" && 
-                user.pass === "1234512345"){
-            console.log("runQuery test passed!");
-            process.exit(0);
-            }
+        // Use 'all' or 'getQuery' because we expect a list of names
+        const tables = await new Promise((resolve, reject) => {
+            db.db.all(sql, [], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+
+        console.log("Tables found in database:");
+        console.table(tables);
+
+        // Verification logic
+        const tableNames = tables.map(row => row.name);
+        if (tableNames.includes('users') && tableNames.includes('Outbox')) {
+            console.log("✅ Schema verification passed!");
         } else {
-            throw new Error("Record was not found via serch");
+            console.error("❌ Schema verification failed. Missing tables.");
+            process.exit(1);
         }
+
     } catch (err) {
-        console.error("Test failed:", err);
+        console.error("Error checking schema:", err.message);
         process.exit(1);
     }
 }
