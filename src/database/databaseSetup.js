@@ -8,9 +8,10 @@ const fs = require('fs').promises;
 async function executeSetup() {
     try{
         const sqlSetup = await readFileContent();
-        
+        const dbPath = process.env.DB_NAME || 'calendar';
+
         const db = await new Promise((resolve, reject) => {
-            const connection = new sqlite3.Database(process.env.DB_NAME || 'calendar', (err) => {
+            const connection = new sqlite3.Database(dbPath, (err) => {
                 if (err) {
                     console.error("Connection error:", err.message);
                     return reject(err);
@@ -55,7 +56,7 @@ async function executeSetup() {
 async function readFileContent() {
     try {
         
-        const data = await fs.readFile('Calendar.sql', 'utf8');
+        const data = await fs.readFile('../Calendar.sql', 'utf8');
         
         console.log("File content:");
         console.log(data);
