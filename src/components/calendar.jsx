@@ -29,16 +29,15 @@ const Calendar = () => {
         setUser(null);
       }
     };
+    if (!user)
+      fetchUser();
 
-    fetchUser();
-  })
-
-  useEffect(() => {
     fetch('/api/get_events', { credentials: 'include' })
       .then((res) => res.json())
       .then((data) => setEvents(data))
       .catch((error) => console.log('Failed to fetch events:', error));
   }, []);
+
 
   const scheduleNotification = async (text, status, duration, scheduleTime, userId) => {
     const response = await fetch('http://localhost:3001/add-notification', {
@@ -107,8 +106,6 @@ const Calendar = () => {
       alert("Failed to create event. Please try again.");
     }
   };
-  console.log(user);
-  console.log(`User ID: ${user ? user.userId : 'null'}`);
 
   return (
     <div className="calendar-container">
@@ -124,7 +121,7 @@ const Calendar = () => {
         </ul>
       </aside>
 
-      <Notification userId={user.userId} />
+      {user && <Notification userId={user.Uid} />}
 
       <main className="calendar-main">
         <div className="calendar-header">

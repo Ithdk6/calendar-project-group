@@ -26,7 +26,7 @@ let notificationQueue: Notification[] = [];
 app.use(express.json());
 
 wss.on('connection', (client: Client, req: http.IncomingMessage) => {
-  const userId = req.url?.split('?')[1]?.split('=')[1]; 
+  const userId = req.url?.split('?')[1]?.split('=')[1];
 
   if (!userId) {
     client.close();
