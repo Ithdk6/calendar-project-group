@@ -29,7 +29,14 @@ export const POST: APIRoute = async ({ request }) => {
     if (!newUser) {
       return new Response(JSON.stringify({ status: 'Username taken' }), { status: 409 });
     }
-
+    
+    //adds user to a new group
+    await db.addGroup(`User${newUser)\'s Group`, newUser);
+    
+    //finds the new group id
+    const gid = await db.findGroupFromUser(newUser);
+    
+    await db.addBlankCalendar(gid,`User${newUser)\'s Calendar`);
     // Outbox entry created inside db.createUserWithOutbox
     return new Response(
       JSON.stringify({ status: 'accepted', commandId: command.commandId, userId: newUser }),
