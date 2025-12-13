@@ -21,10 +21,10 @@ export const GET: APIRoute = async ({ request }) => {
       );
     }
 
-    let userId;
+    let userId
     try {
       const decoded = jwt.verify(token, SECRET);
-      userId = decoded.userId || decoded.id; // depending on token payload
+      userId = decoded.userId
     } catch (error) {
       console.log(`Error: ${error}`);
       return new Response(
@@ -43,10 +43,8 @@ export const GET: APIRoute = async ({ request }) => {
       );
     }
 
-    const user = rows[0];
-
     return new Response(
-      JSON.stringify({ user }),
+      JSON.stringify({ rows }),
       {
         status: 200,
         headers: {

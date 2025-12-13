@@ -29,7 +29,21 @@ html, body {
     border-radius: 4px;
 }
 
+.signout {
+    background-color: white;
+    color: #13aa81;
+    border: none;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
 .signin:hover {
+    background-color: #d2f4ea;
+}
+
+.signout:hover {
     background-color: #d2f4ea;
 }
 
@@ -53,4 +67,8 @@ html, body {
 .brand {
     font-size: 1.2em;
     font-weight: bold;
+}
+
+.user-name {
+    margin-right: 12px;
 }

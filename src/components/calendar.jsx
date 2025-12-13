@@ -16,23 +16,21 @@ const Calendar = () => {
     type: 'Work', //Default to work
   });
 
-  //userId now temporarily stored locally
-  const userId = localStorage.getItem('userId');
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const result = await fetch('/api/get_user', { credentials: 'include' });
         const data = await result.json();
-        if (result.ok) setUser(data.user);
+        if (result.ok) setUser(data.rows);
         else console.error('Error fetching user data: ', data.error);
       }
       catch (error) {
         console.error('Error fetching user data: ', error);
       }
     }
-
-    fetchUser();
+    if (!user) {
+        fetchUser();
+    }
   })
 
   useEffect(() => {
@@ -52,6 +50,10 @@ const Calendar = () => {
     const data = await response.json();
     console.log('Notification scheduled:', data);
   };
+
+  const handleAddEvent = () => {
+      setShowModal(true);
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
