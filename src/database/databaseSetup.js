@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 
 //Connect to the database
 //if database doesn't exist, it will be created
-db = new sqlite3.Database('./calendar.db', (err) => {
+db = new sqlite3.Database(process.env.DB_NAME || 'calendar', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -12,19 +12,27 @@ db = new sqlite3.Database('./calendar.db', (err) => {
 
 async function executeSetup() {
     sqlSetup = await readFileContent();
+    await new Promise((resolve, reject) => {
     db.exec(sqlSetup, (err) => {
         if (err) {
             console.error("Error executing SQL setup:", err.message);
-            return;
+            reject(err);
         }
         else{
             console.log("Database setup completed successfully.");
+            resolve();
         }
+    });
+    await new Promise((resolve, reject) =>{
         db.close((err) => {
             if (err) {
                 console.error(err.message);
+                reject(err);
             }
-            console.log('Close the database connection.');
+            else{
+                console.log('Close the database connection.');
+                resolve();
+            }
         });
     });
 }
@@ -33,7 +41,7 @@ async function executeSetup() {
 async function readFileContent() {
     try {
         
-        const data = await fs.readFile('./Calendar.sql', 'utf8');
+        const data = await fs.readFile('Calendar.sql', 'utf8');
         
         console.log("File content:");
         console.log(data);
