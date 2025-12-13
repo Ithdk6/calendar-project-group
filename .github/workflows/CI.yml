@@ -49,6 +49,15 @@ jobs:
           DB_NAME: testdb.db 
         run: node src/database/databaseSetup.js
 
+      - name: Verify Database File Location
+        run: |
+          echo "Current working directory:"
+          pwd
+          echo "Searching for .db files..."
+          find . -name "*.db"
+          echo "Detailed file list:"
+          ls -R | grep .db || echo "No .db files found!"
+
       - name: Run database function tests
         id: database-testing
         env:
