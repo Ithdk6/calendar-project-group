@@ -61,10 +61,3 @@ jobs:
           node Testing/getQuery_test.cjs
           node Testing/outbox_test.cjs
           node Testing/userWithOutbox_test.cjs
-        
-      - name:  List Files for Debugging
-        run: |
-          pwd
-          ls -R
-
-          

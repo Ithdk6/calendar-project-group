@@ -1,15 +1,18 @@
 //src/database/databaseAggregateFunctions.cjs
 const sqlite3 = require('sqlite3').verbose();
+const path = require(`path`);
 
 class databaseClass {
     constructor(Dname) {
-        this.db = new sqlite3.Database(`./${Dname}.db`, (err) => {
+        const dbPath = path.resolve(__dirname, `../../${Dname}.db`);
+        this.db = new sqlite3.Database(dbPath, (err) => {
             if (err) {
                 console.error(err.message);
             }
             console.log('Connected to the SQLite database.');
         });
     }
+
     //runs provided sql query with parameters
     runQuery(sql, params = []) {
         return new Promise((resolve, reject) => {
