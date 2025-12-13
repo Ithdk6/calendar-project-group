@@ -43,15 +43,13 @@ jobs:
 
       - name: Install Dependencies
         run: npm install ci
-      
-      
 
       - name: Setup Database
         env:
-          DB_Name: testdb.db
+          DB_NAME: testdb.db 
         run: node src/database/databaseSetup.js
 
-      - name: Run database funcion tests
+      - name: Run database function tests
         id: database-testing
         env:
           DB_NAME: testdb.db

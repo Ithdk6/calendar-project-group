@@ -4,11 +4,10 @@ const path = require(`path`);
 
 class databaseClass {
     constructor(Dname) {
-        const dbPath = path.resolve(__dirname, `../../${Dname}.db`);
+        const dbPath = path.resolve(__dirname, `../../`, `${Dname}.db`);
         this.db = new sqlite3.Database(dbPath, (err) => {
-            if (err) {
+            if (err) 
                 console.error(err.message);
-            }
             console.log('Connected to the SQLite database.');
         });
     }
