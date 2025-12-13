@@ -35,10 +35,10 @@ export const GET: APIRoute = async ({ request }) => {
     }
     //get user
     const sql = 'SELECT Uid, email, username FROM Users WHERE Uid = ?';
-    const user = await db.getQuery(sql, [userId]);
+    const data = await db.getQuery(sql, [userId]);
 
     //if user doesnt exist then throw error
-    if (!user) {
+    if (!data) {
       return new Response(
         JSON.stringify({ error: 'User not found' }),
         { status: 404 }
@@ -46,7 +46,7 @@ export const GET: APIRoute = async ({ request }) => {
     }
 
     return new Response(
-      JSON.stringify({ user }),
+      JSON.stringify({ data }),
       {
         status: 200,
         headers: {
