@@ -44,9 +44,25 @@ jobs:
       - name: Install Dependencies
         run: npm install ci
 
-      - name: database_testing.js run
-        id: database-testing
+      - name: Setup Database
+        env:
+          DB_NAME: testdb.db
+        run: node src/database/databaseSetup.js
+      
+      - name: Locate Database Files
         run: |
-            node Testing/Database_testing.js
+          echo "Current Path: $(pwd)"
+          echo "--- Searching for all .db files ---"
+          find . -name "*.db" -exec ls -lh {} +
+          echo "--- End of search ---"
 
-          
+      - name: Run database function tests
+        id: database-testing
+        env:
+          DB_NAME: testdb.db
+        run: |
+          node Testing/test_schema.cjs
+          node Testing/runQuery_test.cjs
+          node Testing/getQuery_test.cjs
+          node Testing/outbox_test.cjs
+          node Testing/userWithOutbox_test.cjs
