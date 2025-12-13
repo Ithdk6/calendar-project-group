@@ -21,16 +21,16 @@ const Calendar = () => {
       try {
         const result = await fetch('/api/get_user', { credentials: 'include' });
         const data = await result.json();
-        if (result.ok) setUser(data.rows);
-        else console.error('Error fetching user data: ', data.error);
+        if (result.ok) { setUser(data.data); }
+        else { setUser(null); }
       }
       catch (error) {
-        console.error('Error fetching user data: ', error);
+        console.error("Failed to fetch user: ", error);
+        setUser(null);
       }
-    }
-    if (!user) {
-        fetchUser();
-    }
+    };
+
+    fetchUser();
   })
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const Calendar = () => {
   }, []);
 
   const scheduleNotification = async (text, status, duration, scheduleTime, userId) => {
-    const response = await fetch('/api/queue_notification', {
+    const response = await fetch('http://localhost:3001/add-notification', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, status, duration, scheduleTime, userId }),
@@ -52,7 +52,7 @@ const Calendar = () => {
   };
 
   const handleAddEvent = () => {
-      setShowModal(true);
+    setShowModal(true);
   }
 
   const handleSubmit = async (event) => {
@@ -72,9 +72,7 @@ const Calendar = () => {
       }
     };
 
-
     try {
-
       //save event to database
       const response = await fetch('/api/events', {
         method: 'POST',
@@ -99,7 +97,7 @@ const Calendar = () => {
 
       // TODO: associate notification with authenticated users
       //use local userId after event added
-      scheduleNotification(newEvent.title, 0, 60000, fullDateTime, userId);
+      scheduleNotification(newEvent.title, 0, 60000, fullDateTime, user.userId);
 
       setShowModal(false);
       setNewEvent({ title: '', date: '', time: '', type: 'Work' });
@@ -109,6 +107,8 @@ const Calendar = () => {
       alert("Failed to create event. Please try again.");
     }
   };
+  console.log(user);
+  console.log(`User ID: ${user ? user.userId : 'null'}`);
 
   return (
     <div className="calendar-container">
@@ -124,7 +124,7 @@ const Calendar = () => {
         </ul>
       </aside>
 
-      <Notification />
+      <Notification userId={user.userId} />
 
       <main className="calendar-main">
         <div className="calendar-header">

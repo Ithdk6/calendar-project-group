@@ -1,3 +1,4 @@
+import Astro from 'astro';
 import { db } from '../../database/databaseAggregateFunctions';
 import type { APIRoute } from 'astro';
 
@@ -14,7 +15,7 @@ export const POST: APIRoute = async ({ request }) => {
   //check if command != null
   const { name, password, email } = command.payload || {};
   if (!name || !password || !email || !command.commandId) {
-      return new Response(JSON.stringify({ error: 'Missing required fields in payload' }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'Missing required fields in payload' }), { status: 400 });
   }
 
   // Idempotency check and create user
@@ -29,14 +30,17 @@ export const POST: APIRoute = async ({ request }) => {
     if (!newUser) {
       return new Response(JSON.stringify({ status: 'Username taken' }), { status: 409 });
     }
-    
+
     //adds user to a new group
-    await db.addGroup(`User${newUser)\'s Group`, newUser);
-    
+    await db.addGroup(`User-${newUser}\'s Group`, newUser);
+
     //finds the new group id
     const gid = await db.findGroupFromUser(newUser);
-    
-    await db.addBlankCalendar(gid,`User${newUser)\'s Calendar`);
+    if (!gid) {
+      throw new Error('Failed to find group for the new user');
+    }
+
+    await db.addBlankCalendar(gid, `User-${newUser} \'s Calendar`);
     // Outbox entry created inside db.createUserWithOutbox
     return new Response(
       JSON.stringify({ status: 'accepted', commandId: command.commandId, userId: newUser }),

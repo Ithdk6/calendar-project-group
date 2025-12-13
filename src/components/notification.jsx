@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../css/notification.css';
 
-const Notification = () => {
+const Notification = ({ userId }) => {
   const [notification, setNotification] = useState('');
   const [notificationClass, setNotificationClass] = useState('');
   const [visible, setVisible] = useState(false);
@@ -28,8 +28,8 @@ const Notification = () => {
   };
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:3001?userId=user123');
-    
+    const ws = new WebSocket(`ws://localhost:3001?userId=${userId}`);
+
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.text) {
@@ -37,7 +37,7 @@ const Notification = () => {
         sendNotification(data.text, data.status, data.duration);
       }
     };
-    
+
     return () => {
       ws.close();
     };
