@@ -10,7 +10,7 @@ async function runQuery_test(){
         const row = await new Promise((resolve, reject) => {
             const sql = "SELECT * FROM users WHERE username = ?";
             //get the inserted data
-            db.db.get(sql, [testUser], (error, result) => {
+            db.db.get(sql, ['testUser'], (error, result) => {
                 if (error) reject(error);
                 else resolve(result);
             });
