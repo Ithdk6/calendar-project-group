@@ -2,12 +2,12 @@
 import sqlite3 from "sqlite3";
 import path from 'path';
 
-export class DatabaseAggregateFunctions {
+class DatabaseAggregateFunctions {
 
   db: sqlite3.Database;
 
   constructor(name: string) {
-    const dbPath = path.resolve(process.cwd(), `${name}.db`);
+    const dbPath = path.resolve(process.cwd(), `${name}`);
     this.db = new sqlite3.Database(dbPath, (err: Error | null) => {
       if (err)
         console.error(err.message);
@@ -572,4 +572,6 @@ export class DatabaseAggregateFunctions {
 }
 
 // This is way better than instantiating the db class in every endpoint
-export const db = new DatabaseAggregateFunctions('calendar');
+const dbName = process.env.DB_NAME || 'calendar.db';
+const db = new DatabaseAggregateFunctions(dbName);
+export { db };
