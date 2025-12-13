@@ -46,13 +46,13 @@ jobs:
 
       - name: Setup Database
         env:
-          DB_Name: testdb
+          DB_Name: testdb.db
         run: node src/database/databaseSetup.js
 
       - name: Run database funcion tests
         id: database-testing
         env:
-          DB_NAME: testdb
+          DB_NAME: testdb.db
         run: |
           node Testing/runQuery_test.cjs
           node Testing/getQuery_test.cjs
