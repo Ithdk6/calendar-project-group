@@ -14,7 +14,7 @@ async function executeSetup() {
             throw new Error("SQL setup string is empty or undefined.");
         }
 
-        const dbPath = process.env.DB_NAME || 'calendar.db';
+        const dbPath = process.env.DB_NAME || 'testdb.db';
 
         //connect to database or create new
         const db = await new Promise((resolve, reject) => {
@@ -40,6 +40,15 @@ async function executeSetup() {
                 }
             });
         });
+
+        await new Promise((resolve, reject) => {
+            db.all("SELECT name FROM sqlite_master WHERE type='table'", (err, rows) => {
+            if (err) return reject(err);
+                console.log("Tables actually created:", rows);
+                resolve();
+            });
+        });
+
         await new Promise((resolve, reject) =>{
             db.close((err) => {
                if (err) {
@@ -52,6 +61,8 @@ async function executeSetup() {
                }
             });
         });
+
+
     }
     catch (error) {
         console.error("Setup failed:", error);
