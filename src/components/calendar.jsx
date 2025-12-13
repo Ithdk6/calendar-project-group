@@ -34,7 +34,7 @@ const Calendar = () => {
   })
 
   useEffect(() => {
-    fetch('/api/events', { credentials: 'include' })
+    fetch('/api/get_events', { credentials: 'include' })
       .then((res) => res.json())
       .then((data) => setEvents(data))
       .catch((error) => console.log('Failed to fetch events:', error));

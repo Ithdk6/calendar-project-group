@@ -3,7 +3,6 @@ import '../css/navbar.css';
 
 const Navbar = () => {
     const [user, setUser] = React.useState(null);
-    console.log(user);
 
     useEffect(() => {
         const fetchUser = async () => {
