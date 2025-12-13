@@ -12,7 +12,7 @@ class DatabaseAggregateFunctions {
       if (err)
         console.error(err.message);
       else
-        console.log(`Connected to the SQLite database: ./${name}.db.`);
+        console.log(`Connected to the SQLite database: ./${name}.`);
     });
   }
 
