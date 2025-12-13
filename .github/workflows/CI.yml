@@ -44,9 +44,14 @@ jobs:
       - name: Install Dependencies
         run: npm install ci
 
-      - name: database_testing.js run
+      - name: Run database funcion tests
         id: database-testing
+        env:
+          DB_NAME: testdb
         run: |
-            node Testing/Database_testing.js
+          node Testing/runQuery_test.js
+          node Testing/getQuery_test.js
+          node Testing/outbox_test.js
+          node Testing/userWithOutbox_test.js
 
           
