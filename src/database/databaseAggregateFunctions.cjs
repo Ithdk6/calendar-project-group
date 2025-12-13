@@ -4,7 +4,7 @@ const path = require(`path`);
 
 class databaseClass {
     constructor(Dname) {
-        const dbPath = path.resolve(process.cwd(), `${Dname}.db`);
+        const dbPath = path.resolve(process.cwd(), `${Dname}`);
         this.db = new sqlite3.Database(dbPath, (err) => {
             if (err) 
                 console.error(err.message);
