@@ -42,11 +42,29 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install ci
-
-      - name: database_testing.js run
-        id: database-testing
         run: |
-            node Testing/Database_testing.js
+          npm install ci
+          npm install --save-dev tsx
 
-          
+      - name: Setup Database
+        env:
+          DB_NAME: testdb.db
+        run: node src/database/databaseSetup.js
+      
+      - name: Locate Database Files
+        run: |
+          echo "Current Path: $(pwd)"
+          echo "--- Searching for all .db files ---"
+          find . -name "*.db" -exec ls -lh {} +
+          echo "--- End of search ---"
+
+      - name: Run database function tests
+        id: database-testing
+        env:
+          DB_NAME: testdb.db
+        run: |
+          npx tsx Testing/test_schema.ts
+          npx tsx Testing/runQuery_test.ts
+          npx tsx Testing/getQuery_test.ts
+          npx tsx Testing/outbox_test.ts
+          npx tsx Testing/userWithOutbox_test.ts

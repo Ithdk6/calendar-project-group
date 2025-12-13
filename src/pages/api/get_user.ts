@@ -1,4 +1,4 @@
-import { db } from '../../database/databaseAggregateFunctions';
+import { db } from '../../database/databaseAggregateFunctions.ts';
 import jwt from 'jsonwebtoken';
 import type { APIRoute } from 'astro';
 
@@ -21,30 +21,32 @@ export const GET: APIRoute = async ({ request }) => {
       );
     }
 
-    let userId
+    let userId: string | number;
     try {
-      const decoded = jwt.verify(token, SECRET);
-      userId = decoded.userId
-    } catch (error) {
-      console.log(`Error: ${error}`);
+      //decode the user object and cast it into an number
+      const decoded = jwt.verify(token, SECRET) as { userId: string | number};
+      userId = Number(decoded.userId);
+    } catch (error: any) {
+      console.log(`Error: ${error.message}`);
       return new Response(
         JSON.stringify({ error: 'Invalid or expired token' }),
         { status: 401 }
       );
     }
-
+    //get user
     const sql = 'SELECT Uid, email, username FROM Users WHERE Uid = ?';
-    const rows = await db.getQuery(sql, [userId]);
+    const user = await db.getQuery(sql, [userId]);
 
-    if (rows.length === 0) {
+    //if user doesnt exist then throw error
+    if (!user) {
       return new Response(
         JSON.stringify({ error: 'User not found' }),
-        { status: 401 }
+        { status: 404 }
       );
     }
 
     return new Response(
-      JSON.stringify({ rows }),
+      JSON.stringify({ user }),
       {
         status: 200,
         headers: {
@@ -53,10 +55,10 @@ export const GET: APIRoute = async ({ request }) => {
       }
     );
 
-  } catch (error) {
-    console.log("Get user error: ", error);
+  } catch (error: any) {
+    console.log("Get user error: ", error.message);
     return new Response(
-      JSON.stringify({ error: error }),
+      JSON.stringify({ error: error.message }),
       { status: 500 }
     );
   }

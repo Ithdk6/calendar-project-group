@@ -1,15 +1,33 @@
 //src/database/databaseAggregateFunctions.ts
-import sqlite3 from 'sqlite3';
+import sqlite3 from "sqlite3";
+import path from 'node:path';
 
-export class DatabaseAggregateFunctions {
+class DatabaseAggregateFunctions {
+
   db: sqlite3.Database;
 
   constructor(name: string) {
-    this.db = new sqlite3.Database(`./src/database/${name}.db`, (err: Error | null) => {
+    const dbPath = path.resolve(process.cwd(), `${name}`);
+    this.db = new sqlite3.Database(dbPath, (err: Error | null) => {
       if (err)
         console.error(err.message);
       else
-        console.log(`Connected to the SQLite database: ./${name}.db.`);
+        console.log(`Connected to the SQLite database: ./${name}.`);
+    });
+  }
+
+  //gets all rows in database from sql statement
+  getAllQuery(sql: string, params: any[] = []): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.db.all(sql, params, function (this: sqlite3.RunResult, err: Error | null, rows: any) {
+        if (err) {
+          console.error("Error running sql: " + sql);
+          console.error(err.message);
+          reject(err);
+        }
+        else
+          resolve(rows || []);
+      });
     });
   }
 
@@ -34,6 +52,7 @@ export class DatabaseAggregateFunctions {
     return new Promise((resolve, reject) => {
       this.db.get(sql, params, (err: Error | null, row: any) => {
         if (err) return reject(err);
+        console.log("Row found!:", row);
         resolve(row);
       });
     });
@@ -553,4 +572,6 @@ export class DatabaseAggregateFunctions {
 }
 
 // This is way better than instantiating the db class in every endpoint
-export const db = new DatabaseAggregateFunctions('calendar');
+const dbName = process.env.DB_NAME || './src/database/calendar.db';
+const db = new DatabaseAggregateFunctions(dbName);
+export { db };

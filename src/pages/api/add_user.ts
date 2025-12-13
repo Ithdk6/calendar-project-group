@@ -11,12 +11,18 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: 'Invalid JSON format' }), { status: 400 });
   }
 
+  //check if command != null
+  const { name, password, email } = command.payload || {};
+  if (!name || !password || !email || !command.commandId) {
+      return new Response(JSON.stringify({ error: 'Missing required fields in payload' }), { status: 400 });
+  }
+
   // Idempotency check and create user
   try {
     const newUser = await db.createUserWithOutbox(
-      command.payload.name,
-      command.payload.password,
-      command.payload.email,
+      name,
+      password,
+      email,
       command.commandId
     );
 
@@ -29,8 +35,11 @@ export const POST: APIRoute = async ({ request }) => {
       JSON.stringify({ status: 'accepted', commandId: command.commandId, userId: newUser }),
       { status: 202 }
     );
-  } catch (error) {
-    console.log(`Error: ${error}`);
-    return new Response(JSON.stringify({ error: error }), { status: 500 });
+  } catch (error: any) {
+    console.error(`Error: ${error}`);
+    if (error.message?.includes('UNIQUE constraint failed')) {
+      return new Response(JSON.stringify({ status: 'already_processed' }), { status: 200 });
+    }
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
