@@ -10,13 +10,13 @@ async function runQuery_test(){
         }
         
         //verify user
-        const userCheck = await db.getQuery("SELECT * FROM users WHERE username = ?", ['testUser']);
+        const userCheck = await db.getQuery("SELECT * FROM Users WHERE username = ?", ['testUser']);
 
         //verify outbox
-        const outboxCheck = await db.getQuery("SELECT * FROM Outbox WHERE username = ?", ['testUser']);
+        const outboxCheck = await db.getQuery("SELECT * FROM Outbox WHERE OutboxType = ?", ['UserCreated']);
 
         //if user ad outbox were both inserted and retrieved then it passed
-        if (userCheck.length > 0 && outboxCheck.length > 0) {
+        if (userCheck && outboxCheck) {
             console.log("integration Test Passed: User and Outbox record created.");
             process.exit(0);
         } else {

@@ -33,6 +33,7 @@ class databaseClass {
         return new Promise((resolve, reject) => {
             this.db.get(sql, params, (err, row) => {
                 if (err) reject(err);
+                console.log("Row found:", row);
                 resolve(row);
             });
         });
@@ -557,6 +558,6 @@ class databaseClass {
     }
 }
 
-const dbName = process.env.DB_NAME || 'calendar.db';
+const dbName = process.env.DB_NAME || 'testdb.db';
 const db = new databaseClass(dbName);
 module.exports = { db };
