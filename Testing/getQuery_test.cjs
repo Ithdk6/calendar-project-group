@@ -14,8 +14,9 @@ async function getQuery_test(){
             const user = output[0];
             if (user && user.email === "testEmail@test.test" && 
                 user.pass === "1234512345"){
-            console.log("runQuery test passed!");
-            process.exit(0);
+                    
+                console.log("runQuery test passed!");
+                process.exit(0);
             }
         } else {
             throw new Error("Record was not found via serch");

@@ -46,7 +46,7 @@ jobs:
 
       - name: Setup Database
         env:
-          DB_NAME: testdb.db 
+          DB_NAME: testdb.db
         run: node src/database/databaseSetup.js
 
       - name: Run database function tests
