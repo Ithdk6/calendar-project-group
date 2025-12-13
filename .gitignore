@@ -1,3 +1,6 @@
 node_modules/*
 calendar.db
 .astro
+dist/*
+.idea
+identifier.sqlite
