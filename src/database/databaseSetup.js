@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs').promises;
+const path = require('path');
 
 //Connect to the database
 //if database doesn't exist, it will be created
@@ -8,8 +9,14 @@ const fs = require('fs').promises;
 async function executeSetup() {
     try{
         const sqlSetup = await readFileContent();
+
+        if (!sqlSetup) {
+            throw new Error("SQL setup string is empty or undefined.");
+        }
+
         const dbPath = process.env.DB_NAME || 'calendar';
 
+        //connect to database or create new
         const db = await new Promise((resolve, reject) => {
             const connection = new sqlite3.Database(dbPath, (err) => {
                 if (err) {
@@ -54,9 +61,9 @@ async function executeSetup() {
 
 // read the sql file content
 async function readFileContent() {
+    const filePath = path.resolve(__dirname, '../../Calendar.sql');
     try {
-        
-        const data = await fs.readFile('../Calendar.sql', 'utf8');
+        const data = await fs.readFile(filePath, 'utf8');
         
         console.log("File content:");
         console.log(data);
