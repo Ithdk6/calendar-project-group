@@ -61,7 +61,7 @@ async function executeSetup() {
 
 // read the sql file content
 async function readFileContent() {
-    const filePath = path.resolve(__dirname, 'src/database/Calendar.sql');
+    const filePath = path.resolve(__dirname, 'Calendar.sql');
     try {
         const data = await fs.readFile(filePath, 'utf8');
         
