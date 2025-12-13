@@ -23,8 +23,8 @@ async function getQuery_test(){
             process.exit(1);
         }
 
-    } catch (err) {
-        console.error("Error checking schema:", err.message);
+    } catch (error) {
+        console.error("Error checking schema:", error.message);
         process.exit(1);
     }
 }
