@@ -1,4 +1,4 @@
-const { db } = require('../src/dbbase/databaseAggregateFunctions.cjs');
+const { db } = require('src/dbbase/databaseAggregateFunctions.cjs');
 
 async function getQuery_test(){
     const sql = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';";
