@@ -1,4 +1,4 @@
-import { db } from '../../database/databaseAggregateFunctions';
+import { db } from '../../database/databaseAggregateFunctions.ts';
 import jwt from 'jsonwebtoken';
 import type { APIRoute } from 'astro';
 
@@ -16,11 +16,19 @@ export const POST: APIRoute = async ({ request }) => {
   if (!token) {
     return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
   }
-
-  let userId;
+  interface Token{
+    userId?: string | number;
+    userid?: string | number;
+  }
+  let Uid;
   try {
-    const decoded = jwt.verify(token, SECRET);
-    userId = decoded.userId || decoded.userid; // make sure to match your token payload
+    const decoded = jwt.verify(token, SECRET) as Token;
+    Uid = decoded.userId || decoded.userid;
+
+    //check if user is known
+    if (!Uid) {
+        return new Response(JSON.stringify({ error: 'Token missing user identity' }), { status: 401 });
+    }
   } catch (error) {
     console.log(`Error: ${error}`);
     return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401 });
@@ -39,12 +47,12 @@ export const POST: APIRoute = async ({ request }) => {
     // Integrity check: command already processed?
     const sqlCheck = "SELECT CommandID FROM Commands WHERE CommandID = ?";
     const exists = await db.getQuery(sqlCheck, [command.commandId]);
-    if (exists.length > 0) {
+    if (exists) {
       return new Response(JSON.stringify({ status: 'already_processed' }), { status: 200 });
     }
 
     // Unpack payload
-    const { title, date, type } = command.payload || {};
+    const { title, date, ty } = command.payload || {};
 
     // Validate payload
     if (!command.payload || !title || !date) {
@@ -52,8 +60,11 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Create event with outbox
-    const gID = await db.findGroupFromUser(userId);
-    await db.createEventWithOutbox(userId, gID, title, '', date, type);
+    const gID = await db.findGroupFromUser(Number(Uid));
+    if (!gID) {
+      return new Response(JSON.stringify({ error: 'User group not found' }), { status: 404 });
+    }
+    await db.createEventWithOutbox(Number(Uid), gID, title, '', date, ty);
 
     // Save Command ID in database
     const sqlCommand = "INSERT INTO Commands (CommandID) VALUES (?)";
@@ -62,11 +73,11 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({
       status: 'accepted',
       commandId: command.commandId,
-      userId: userId
+      userId: Uid
     }), { status: 200 });
 
-  } catch (error) {
-    console.error("Database Error:", error);
-    return new Response(JSON.stringify({ error: error }), { status: 500 });
+  } catch (error: any) {
+    console.error("Database Error:", error.message);
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
