@@ -48,6 +48,13 @@ jobs:
         env:
           DB_NAME: testdb.db
         run: node src/database/databaseSetup.js
+      
+      - name: Locate Database Files
+        run: |
+          echo "Current Path: $(pwd)"
+          echo "--- Searching for all .db files ---"
+          find . -name "*.db" -exec ls -lh {} +
+          echo "--- End of search ---"
 
       - name: Run database function tests
         id: database-testing
