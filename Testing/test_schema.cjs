@@ -1,8 +1,9 @@
-const { db } = require('src/dbbase/databaseAggregateFunctions.cjs');
+const { db } = require('../src/database/databaseAggregateFunctions.cjs');
 
 async function getQuery_test(){
     const sql = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';";
-        
+    console.log(db);
+        try{
         // Use 'all' or 'getQuery' because we expect a list of names
         const tables = await new Promise((resolve, reject) => {
             db.db.all(sql, [], (err, rows) => {
@@ -19,7 +20,7 @@ async function getQuery_test(){
         if (tableNames.includes('users') && tableNames.includes('Outbox')) {
             console.log("✅ Schema verification passed!");
         } else {
-            console.error("❌ Schema verification failed. Missing tables.");
+            console.error("Schema verification failed. Missing tables.");
             process.exit(1);
         }
 
