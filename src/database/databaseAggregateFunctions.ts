@@ -7,7 +7,7 @@ export class DatabaseAggregateFunctions {
   db: sqlite3.Database;
 
   constructor(name: string) {
-    const dbPath = path.resolve(process.cwd(), `${name}.db`);
+    const dbPath = path.resolve(process.cwd(), `${name}`);
     this.db = new sqlite3.Database(dbPath, (err: Error | null) => {
       if (err)
         console.error(err.message);
@@ -37,7 +37,7 @@ export class DatabaseAggregateFunctions {
     return new Promise((resolve, reject) => {
       this.db.get(sql, params, (err: Error | null, row: any) => {
         if (err) return reject(err);
-        console.log("Row found:", row);
+        console.log("Row found!:", row);
         resolve(row);
       });
     });
@@ -556,4 +556,5 @@ export class DatabaseAggregateFunctions {
   }
 }
 
+// This is way better than instantiating the db class in every endpoint
 export const db = new DatabaseAggregateFunctions('calendar');

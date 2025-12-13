@@ -4,7 +4,8 @@ import type { APIRoute } from "astro";
 
 const SECRET = process.env.JWT_SECRET || 'supersecret-key-that-no-one-knows';
 
-export const GET: APIRoute = async ({ request }) => {
+//needs to be post because get requests cant have a body json
+export const POST: APIRoute = async ({ request }) => {
     const cookieHeader = request.headers.get('cookie') || '';
     const cookies = Object.fromEntries(
         cookieHeader.split(';').map(c => c.trim().split('='))
@@ -15,10 +16,18 @@ export const GET: APIRoute = async ({ request }) => {
         return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
     }
 
+    //struct for userId
+    interface TokenPayload{
+        userId?: string;
+        userid?: string;
+    }
     let userId;
+
     try {
-        const decoded = jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, SECRET) as TokenPayload;
         userId = decoded.userId || decoded.userid;
+
+        if (!userId) throw new Error("No user ID in token");
     } catch (error)  {
         console.log(`Error: ${error}`);
         return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401 });
@@ -45,17 +54,21 @@ export const GET: APIRoute = async ({ request }) => {
             return new Response(JSON.stringify({ error: 'Invalid payload' }), { status: 400 });
         }
 
-        const gID = await db.findGroupFromUser(userId);
-        const cID = await db.findCidsFromGCal(gID);
+        //get the user's group
+        const gID = await db.findGroupFromUser(+userId);
 
-        //get all events from all calendars the user is apart of
-        const events = [];
-        for (const c of cID) {
-            const group_events = await db.findEidsFromCalendar(c)
-            for (const event of group_events) {
-                events.push(event);
-            }
+        if (!gID) {
+            return new Response(JSON.stringify({ error: 'User group not found' }), { status: 404 });
         }
+        
+        //find all calendars in the group
+        const cIDs = await db.findCidsFromGCal(Number(gID));
+
+        //get all events from all calendars the user is apart of at the same time via map
+        const eventPromises = cIDs.map((c: any) => db.findEidsFromCalendar(c));
+        const results = await Promise.all(eventPromises);
+
+        console.log("Events:", results.flat());
 
         return new Response(JSON.stringify({
             status: 'accepted',
@@ -65,6 +78,6 @@ export const GET: APIRoute = async ({ request }) => {
 
     } catch (error) {
         console.error("Database Error: ", error);
-        return new Response(JSON.stringify({ error: error }), { status: 500 });
+        return new Response(JSON.stringify({ error: error || "Internal Server Error" }), { status: 500 });
     }
 }
