@@ -77,7 +77,7 @@ class DatabaseAggregateFunctions {
       console.log(Type);
       const outboxPayload = {
         title: Core.Title,
-        date: new Date(Time.EYear, Time.Month, Time.Day, Time.StartTime.split(":")[0] as unknown as number, Time.StartTime.split(":")[1] as unknown as number),
+        date: new Date(Time.EYear, (Time.Month - 1), Time.Day, Time.StartTime.split(":")[0] as unknown as number, Time.StartTime.split(":")[1] as unknown as number),
         type: Type.Tname
       };
 
