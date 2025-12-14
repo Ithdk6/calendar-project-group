@@ -119,21 +119,9 @@ const Calendar = () => {
     }
   };
 
-
   return (
     <div className="calendar-container">
       <Navbar />
-
-      <aside className="type-sidebar">
-        <h3>Types</h3>
-        <ul>
-          <li>All Events</li>
-          <li>School</li>
-          <li>Work</li>
-          <li>Personal</li>
-          <li>Family</li>
-        </ul>
-      </aside>
 
       {user && <Notification userId={user.Uid} />}
 
