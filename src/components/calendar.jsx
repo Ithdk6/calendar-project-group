@@ -29,19 +29,25 @@ const Calendar = () => {
         setUser(null);
       }
     };
+    if (!user)
+      fetchUser();
+  }, []);
+
+  useEffect(() => {
     const fetchEvents = async () => {
       fetch('/api/get_events', { credentials: 'include' })
         .then((res) => res.json())
-        .then((data) => setEvents(data.events))
+        .then((data) => {
+          console.log('data: ', data);
+          console.log('data.events: ', data.events);
+          setEvents(data.events)
+          console.log('events: ', events);
+        })
         .catch((error) => console.log('Failed to fetch events:', error));
 
       console.log("Events:");
       console.log(events);
     };
-
-    if (!user)
-      fetchUser();
-
     fetchEvents();
   }, []);
 

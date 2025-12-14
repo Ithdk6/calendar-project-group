@@ -48,7 +48,7 @@ export const GET: APIRoute = async ({ request }) => {
     const eventIds = (await Promise.all(cIDs.map((c: any) => db.findEidsFromCalendar(c))))[0];
     console.log("Events IDs:", eventIds);
     const events = await Promise.all(eventIds.map((e: any) => db.findEvent(e)));
-    console.log("Events:", events.flat());
+    console.log("Events:", events);
 
     return new Response(JSON.stringify({
       status: 'accepted',
