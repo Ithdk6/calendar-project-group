@@ -13,7 +13,7 @@ const Calendar = () => {
     title: '',
     date: '',
     time: '',
-    type: 'Work', //Default to work
+    type: 'Personal', //Default to personal
   });
 
   useEffect(() => {
@@ -29,13 +29,17 @@ const Calendar = () => {
         setUser(null);
       }
     };
+    const fetchEvents = async () => {
+      fetch('/api/get_events', { credentials: 'include' })
+        .then((res) => res.json())
+        .then((data) => setEvents(data.events))
+        .catch((error) => console.log('Failed to fetch events:', error));
+    };
+
     if (!user)
       fetchUser();
 
-    fetch('/api/get_events', { credentials: 'include' })
-      .then((res) => res.json())
-      .then((data) => setEvents(data))
-      .catch((error) => console.log('Failed to fetch events:', error));
+    fetchEvents();
   }, []);
 
 
@@ -99,13 +103,13 @@ const Calendar = () => {
       scheduleNotification(newEvent.title, 0, 60000, fullDateTime, user.userId);
 
       setShowModal(false);
-      setNewEvent({ title: '', date: '', time: '', type: 'Work' });
+      setNewEvent({ title: '', date: '', time: '', type: 'Personal' });
     }
     catch (err) {
-      console.error(err);
-      alert("Failed to create event. Please try again.");
+      alert(`Failed to create event. Please try again. ${err}`);
     }
   };
+
 
   return (
     <div className="calendar-container">
@@ -115,6 +119,7 @@ const Calendar = () => {
         <h3>Types</h3>
         <ul>
           <li>All Events</li>
+          <li>School</li>
           <li>Work</li>
           <li>Personal</li>
           <li>Family</li>
@@ -174,6 +179,7 @@ const Calendar = () => {
                 value={newEvent.type}
                 onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
               >
+                <option value="School">School</option>
                 <option value="Work">Work</option>
                 <option value="Personal">Personal</option>
                 <option value="Family">Family</option>

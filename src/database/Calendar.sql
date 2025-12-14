@@ -110,3 +110,5 @@ CREATE table Has(
   AvailID INTEGER,
   PRIMARY key (UserID, AvailID)
 );
+
+INSERT INTO Type (Tname) VALUES ('School'), ('Work'), ('Personal'), ('Family');

@@ -33,27 +33,7 @@ export const GET: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401 });
   }
 
-  let command;
   try {
-    command = await request.json();
-  } catch (error) {
-    console.log(`Error: ${error}`);
-    return new Response(JSON.stringify({ error: 'Invalid JSON format' }), { status: 400 });
-  }
-
-  try {
-    const sqlCheck = "SELECT CommandID FROM Commands WHERE CommandID = ?";
-    const exists = await db.getQuery(sqlCheck, [command.commandId]);
-    if (exists) {
-      return new Response(JSON.stringify({ status: 'already_processed' }), { status: 200 });
-    }
-
-    const { title, date, type } = command.payload || {};
-
-    if (!command.payload || !title || !date) {
-      return new Response(JSON.stringify({ error: 'Invalid payload' }), { status: 400 });
-    }
-
     //get the user's group
     const gID = await db.findGroupFromUser(Number(userId));
 
@@ -72,8 +52,8 @@ export const GET: APIRoute = async ({ request }) => {
 
     return new Response(JSON.stringify({
       status: 'accepted',
-      commandId: command.commandId,
       userId: userId,
+      events: results
     }), { status: 200 });
 
   } catch (error: any) {

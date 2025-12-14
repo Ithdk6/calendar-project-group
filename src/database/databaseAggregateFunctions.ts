@@ -75,7 +75,11 @@ class DatabaseAggregateFunctions {
 
       //Insert into users
       const sqlUser = "INSERT INTO users (email, username, pass) VALUES (?, ?, ?)"
-      const newUserID = await this.runQuery(sqlUser, [Email, username, password]);
+      const newUser = await this.runQuery(sqlUser, [Email, username, password]);
+      const newUserID = newUser.id;
+
+      if (!newUserID)
+        throw new Error("User creation failed");
 
       //Insert into Outbox (Using the new user ID)
       const outboxPayload = {
@@ -86,7 +90,7 @@ class DatabaseAggregateFunctions {
       };
 
       const sqlOutbox = "INSERT INTO Outbox (outboxType, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
-      await this.runQuery(sqlOutbox, ['UserCreated', (newUserID && (newUserID as any).id) || newUserID, JSON.stringify(outboxPayload), new Date().toISOString(), 0]);
+      await this.runQuery(sqlOutbox, ['UserCreated', newUserID, JSON.stringify(outboxPayload), new Date().toISOString(), 0]);
 
       // Commit Transaction
       await this.runQuery("COMMIT");
@@ -130,14 +134,6 @@ class DatabaseAggregateFunctions {
       const existingType = await this.getQuery(sqlFindType, [type]);
       let typeID;
 
-      if (existingType) {
-        typeID = existingType.Tid;
-      } else {
-        const sqlInsertType = "INSERT INTO Type (Tname) VALUES (?)";
-        const typeResult = await this.runQuery(sqlInsertType, [type]);
-        typeID = (typeResult && (typeResult as any).id) || typeResult;
-      }
-
       const sqlEventType = "INSERT INTO EventType (TypeID, EventID) VALUES (?, ?)";
       await this.runQuery(sqlEventType, [typeID, newEventID]);
 
@@ -180,15 +176,15 @@ class DatabaseAggregateFunctions {
   async addUser(name: string, pass: string): Promise<number | undefined> {
     // Insert a new user into the Users table
     const sql = "INSERT INTO Users (username, pass) VALUES (?, ?)";
-    try{
+    try {
       const result = await this.runQuery(sql, [name, pass]);
-    
+
       //console.log(`User ${name} added.`);
       //console.log(`The User ID is ${result.id}`);
-    
+
       return (result && (result as any).id) || undefined;
     }
-    catch (err){
+    catch (err) {
       console.error("Error adding User:", err);
     }
   }
@@ -198,7 +194,7 @@ class DatabaseAggregateFunctions {
     const sqlGroup = "INSERT INTO Groups (Gname) VALUES (?)";
     const sqlIncludes = "INSERT INTO Included (Userid, Groupid) VALUES (?, ?)";
 
-    try{
+    try {
       //Insert the new group into Groups table
       const result = await this.runQuery(sqlGroup, [name]);
       //console.log(`Group ${name} added to the database.`);
@@ -210,7 +206,7 @@ class DatabaseAggregateFunctions {
       //Insert the mapping of group and user into Included table
       await this.runQuery(sqlIncludes, [userID, GroupID]);
       //console.log(`User ${userID} added to Group ${GroupID}.`);
-    } catch (err){
+    } catch (err) {
       console.error("Error adding group:", err);
     }
   }
@@ -219,11 +215,11 @@ class DatabaseAggregateFunctions {
   async addUserToGroup(UserID: number, GroupID: number): Promise<void> {
     const sqlIncludes = "INSERT INTO Included (Userid, Groupid) VALUES (?, ?)";
 
-    try{
+    try {
       //map a new user to a group via included table
       await this.runQuery(sqlIncludes, [UserID, GroupID]);
       //console.log(`User ${userID} added to Group ${GroupID}.`);
-    } catch (err){
+    } catch (err) {
       console.error("Error adding group:", err);
     }
   }
@@ -232,7 +228,7 @@ class DatabaseAggregateFunctions {
   async addAvailability(userID: number, startTime: string, endTime: string, Day: number, Month: number, Year: number): Promise<void> {
     const sqlAvail = "INSERT INTO Availability (Day, Month, AYear, StartTime, EndTime) VALUES (?, ?, ?, ?, ?)";
     const sqlHas = "INSERT INTO Has (UserID, AvailID) VALUES (?, ?)";
-    try{
+    try {
       //Insert the new availability into Availability table
       const result = await this.runQuery(sqlAvail, [Day, Month, Year, startTime, endTime]);
       //console.log(`Availability ${result.id} added to the Avail table.`);
@@ -241,7 +237,7 @@ class DatabaseAggregateFunctions {
       await this.runQuery(sqlHas, [userID, result.id]);
       //console.log(`Availability ${result.id} added to the Has table.`);
     }
-    catch (err){
+    catch (err) {
       console.error("Error Adding Availability:", err);
     }
   }
@@ -267,7 +263,7 @@ class DatabaseAggregateFunctions {
 
       await this.runQuery(sqlEventType, [typeObject.id, result.id]);
 
-    } catch (err){
+    } catch (err) {
       console.error("Error adding Event:", err);
     }
   }
@@ -277,17 +273,17 @@ class DatabaseAggregateFunctions {
 
     const sql = "INSERT INTO Calendar (Cname) VALUES (?)";
     const sqlGCal = "INSERT INTO GCal (GroupID, CalendarID) VALUES (?, ?)";
-    try{
+    try {
       const result = await this.runQuery(sql, [calName]);
-    
+
       //console.log(`Calender ${calName} added.`);
       //console.log(`The Calendar ID is ${result.id}`);
-      
+
       await this.runQuery(sqlGCal, [Gid, result.id]);
 
       //console.log(`mapping of Group and Calendar`);
     }
-    catch (err){
+    catch (err) {
       console.error("Error adding Calendar:", err);
     }
   }
@@ -297,14 +293,14 @@ class DatabaseAggregateFunctions {
 
     const sqlType = "INSERT INTO Type (Tname) VALUES (?)";
     const sqlEventType = "INSERT INTO EventType (TypeID, EventID) VALUES (?, ?)";
-    try{
+    try {
       const result = await this.runQuery(sqlType, [typeName]);
       //console.log(`Type ${typeName} added.`);
-      
+
       await this.runQuery(sqlEventType, [result.id, Eid]);
       //console.log(`mapping of Type and Event added`);
     }
-    catch (err){
+    catch (err) {
       console.error("Error adding Type:", err);
     }
   }
@@ -317,7 +313,7 @@ class DatabaseAggregateFunctions {
     //wrap all sql commands in a "Packet" so that in the instance of a server crash,
     //it can rollback to the previous stable state
     await this.runQuery("BEGIN TRANSACTION");
-    try{
+    try {
       //Delete all mappings of this Avail to User from Has table
       await this.runQuery(sqlDeleteHas, [Aid]);
       console.log(`Avail ${Aid} Deleted from Has.`);
@@ -329,7 +325,7 @@ class DatabaseAggregateFunctions {
       //end the transaction
       await this.runQuery("COMMIT");
     }
-    catch (err){
+    catch (err) {
       //roll back the delete if error occured
       await this.runQuery("ROLLBACK");
       console.error("Error deleting Type:", err);
@@ -344,7 +340,7 @@ class DatabaseAggregateFunctions {
     //wrap all sql commands in a "Packet" so that in the instance of a server crash,
     //it can rollback to the previous stable state
     await this.runQuery("BEGIN TRANSACTION");
-    try{
+    try {
       //Delete all mappings of this Type to Events from EventType table
       await this.runQuery(sqlDeleteEType, [Tid]);
       console.log(`Type ${Tid} Deleted from EventType.`);
@@ -356,7 +352,7 @@ class DatabaseAggregateFunctions {
       //end the transaction
       await this.runQuery("COMMIT");
     }
-    catch (err){
+    catch (err) {
       //roll back the delete if error occured
       await this.runQuery("ROLLBACK");
       console.error("Error deleting Type:", err);
@@ -392,7 +388,7 @@ class DatabaseAggregateFunctions {
       await this.runQuery("ROLLBACK");
       console.error("Error deleting User:", err);
     }
-    
+
   }
 
   //Deletes a user from the database - complete
@@ -406,7 +402,7 @@ class DatabaseAggregateFunctions {
     //wrap all sql commands in a "Packet" so that in the instance of a server crash,
     //it can rollback to the previous stable state
     await this.runQuery("BEGIN TRANSACTION");
-    try{
+    try {
       //Delete all mappings of this user to groups from Included table
       await this.runQuery(sqlDeleteIncluded, [UserID]);
       console.log(`User ${UserID} Deleted from Included.`);
@@ -418,11 +414,11 @@ class DatabaseAggregateFunctions {
       //Delete the user mapping from has table
       await this.runQuery(sqlDeleteUHas, [UserID]);
       console.log(`User ${UserID} Deleted from Has.`);
-  
+
       //end the transaction
       await this.runQuery("COMMIT");
     }
-    catch (err){
+    catch (err) {
       //roll back the delete if error occured
       await this.runQuery("ROLLBACK");
       console.error("Error deleting User:", err);
@@ -437,13 +433,13 @@ class DatabaseAggregateFunctions {
     //it can rollback to the previous stable state
     await this.runQuery("BEGIN TRANSACTION");
 
-    try{
+    try {
       await this.runQuery(sqlDeleteIncluded, [UserID, GroupID]);
       console.log(`User ${UserID} Deleted from Included.`);
       //end the transaction
       await this.runQuery("COMMIT");
     }
-    catch (err){
+    catch (err) {
       //roll back the delete if error occured
       await this.runQuery("ROLLBACK");
       console.error("Error deleting include:", err);
@@ -459,7 +455,7 @@ class DatabaseAggregateFunctions {
     //wrap all sql commands in a "Packet" so that in the instance of a server crash,
     //it can rollback to the previous stable state
     await this.runQuery("BEGIN TRANSACTION");
-    try{
+    try {
       //Delete all mappings of this user to groups from Included table
       await this.runQuery(sqlDeleteGCal, [groupID, calID]);
       console.log(`Calendar mapping ${calID} Deleted from GCal.`);
@@ -475,7 +471,7 @@ class DatabaseAggregateFunctions {
       //end the transaction
       await this.runQuery("COMMIT");
     }
-    catch (err){
+    catch (err) {
       //roll back the delete if error occured
       await this.runQuery("ROLLBACK");
       console.error("Error deleting Calendar:", err);
@@ -494,7 +490,7 @@ class DatabaseAggregateFunctions {
     //it can rollback to the previous stable state
     await this.runQuery("BEGIN TRANSACTION");
 
-    try{
+    try {
       //Delete the EventTime from EventType table
       await this.runQuery(sqlDeleteEType, [EventID]);
       console.log(`Type mapping ${EventID} Deleted from Type.`);
@@ -514,7 +510,7 @@ class DatabaseAggregateFunctions {
       //end the transaction
       await this.runQuery("COMMIT");
     }
-    catch (err){
+    catch (err) {
       //roll back the delete if error occured
       await this.runQuery("ROLLBACK");
       console.error("Error deleting Event:", err);

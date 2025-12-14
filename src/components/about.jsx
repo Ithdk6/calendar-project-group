@@ -43,7 +43,7 @@ const About = () => {
           <ul>
             <li>Personal calendar editing and saving</li>
             <li>Sharing/syncing with others</li>
-            <li>Categories: Work, School, Personal, etc.</li>
+            <li>Categories: Work, Class, Personal, etc.</li>
             <li>Option to share full event content or just "busy" status</li>
           </ul>
           <p><strong>This app will never include:</strong></p>
