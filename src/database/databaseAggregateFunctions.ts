@@ -62,23 +62,23 @@ class DatabaseAggregateFunctions {
       const sqlCore = "SELECT FROM EventCore WHERE Eid = ?";
       const sqlTime = "SELECT FROM EventTIme WHERE Eid = ?";
 
-      await this.runQuery("BEGIN TRANSACTION");
       try{
         const Core = await this.getQuery(sqlCore, [EventId]);
         const Time = await this.getQuery(sqlTime, [EventId]);
-        await this.runQuery("COMMIT");
         const outboxPayload = {
           title: Core.Title,
           description: Core.Description,
-          time: `${Time.startTime}-${Time.endTime}`,
-          date: `${Time.day}/${Time.month}/${Time.year}`
+          starttime: Time.startTime,
+          endtime:Time.endTime,
+          day: Time.day,
+          month: Time.month,
+          year: Time.year
         };
         
         return outboxPayload;
       }
       catch (err: any){
-        console.error("Transaction failed, rolling back", err);
-        await this.runQuery("ROLLBACK");
+        console.error("Transaction failed", err);
         throw err;
       }
   }
