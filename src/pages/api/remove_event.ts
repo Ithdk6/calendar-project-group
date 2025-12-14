@@ -1,20 +1,10 @@
 import { db } from '../../database/databaseAggregateFunctions.ts';
-import jwt from 'jsonwebtoken';
 import type { APIRoute } from 'astro';
 
 const SECRET = process.env.JWT_SECRET || 'supersecret-key-that-no-one-knows';
 
 // Used for deletion of events
 export const POST: APIRoute = async ({ request }) => {
-   const cookieHeader = request.headers.get('cookie') || '';
-   const cookies = Object.fromEntries(
-     cookieHeader
-    .split(';')
-    .map(c => c.trim().split('='))
-   );
-  const token = cookies['session'];
-
-
   // In case of bad JSON
   let command;
   try {
@@ -24,10 +14,9 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: 'Invalid JSON format' }), { status: 400 });
   }
 
+  //console.log(request);
+
   try {
-    
-    const decoded = jwt.verify(token, SECRET) as { userId: string | number };
-    const userId = decoded.userId;
 
     const exists = await db.getQuery("SELECT CommandID FROM Commands WHERE CommandID = ?", [command.commandId]);
         if (exists) {
@@ -35,7 +24,7 @@ export const POST: APIRoute = async ({ request }) => {
         }
     
     //delete the event
-    const { Eid } = command.payload || {};
+    const Eid  = command.payload.Eid;
         if (!Eid) {
             return new Response(JSON.stringify({ error: 'Missing Event ID (Eid)' }), { status: 400 });
         }

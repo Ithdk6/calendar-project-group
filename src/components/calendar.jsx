@@ -129,10 +129,23 @@ const Calendar = () => {
   }
 
   const handleRemoveEvent = async () => {
-    await fetch('/api/remove_event', {
-      payload: {eventId: removeEvent.id},
-      credentials: 'include'
+    const commandId = crypto.randomUUID();
+
+    const payload = {
+      commandId: commandId,
+      payload: { Eid: removeEvent.id }
+    };
+
+    console.log(removeEvent.id);
+
+    const response = await fetch('/api/remove_event', {
+      method: 'POST',
+      body: JSON.stringify(payload),
     });
+
+    if (!response.ok) {
+      throw new Error('Failed to remove event');
+    }
 
     window.location.href = '/calendar'
   }
