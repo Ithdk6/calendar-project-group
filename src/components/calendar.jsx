@@ -126,11 +126,15 @@ const Calendar = () => {
 
   const handleRemoveEventHelper = (arg = {}) => {
     setRemoveEvent(arg.event);
-
   }
 
-  const handleRemoveEvent = async (arg) => {
-    console.log("Remove event: ", arg)
+  const handleRemoveEvent = async () => {
+    await fetch('/api/remove_event', {
+      payload: {eventId: removeEvent.id},
+      credentials: 'include'
+    });
+
+    window.location.href = '/calendar'
   }
 
   return (
