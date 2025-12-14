@@ -1,6 +1,5 @@
 node_modules/*
-calendar.db
 .astro
-dist/*
-.idea
-identifier.sqlite
+.fuse*
+./src/database/calendar.db
+src/database/calendar.db

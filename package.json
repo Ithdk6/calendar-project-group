@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "concurrently \"astro dev\" \"node server.cjs\"",
+    "dev": "concurrently \"astro dev\" \"npx tsx server.ts\"",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.3",
     "kafkajs": "^2.2.4",
     "node-cron": "^4.2.1",
+    "prop-types": "^15.8.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-router-dom": "^7.10.1",
@@ -29,6 +30,8 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/sqlite3": "^3.1.11",
     "@types/ws": "^8.18.1",
     "concurrently": "^9.2.1"
   }

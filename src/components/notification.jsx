@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import '../css/notification.css';
 
-const Notification = () => {
+const Notification = ({ userId }) => {
   const [notification, setNotification] = useState('');
   const [notificationClass, setNotificationClass] = useState('');
   const [visible, setVisible] = useState(false);
@@ -28,16 +29,17 @@ const Notification = () => {
   };
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:3001?userId=user123');
-    
+    console.log(`User ID: ${userId}`);
+    const ws = new WebSocket(`ws://localhost:3001?userId=${userId}`);
+
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      const data = JSON.parse(JSON.parse(event.data));
       if (data.text) {
-        console.log(data);
+        console.log('Notification received: ', data);
         sendNotification(data.text, data.status, data.duration);
       }
     };
-    
+
     return () => {
       ws.close();
     };
@@ -53,5 +55,10 @@ const Notification = () => {
     </div>
   );
 };
+
+
+Notification.propTypes = {
+  userId: PropTypes.string,
+}
 
 export default Notification;

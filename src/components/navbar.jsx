@@ -7,10 +7,10 @@ const Navbar = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const result = await fetch('http://localhost:3000/pages/api/_get_user', {credentials: 'include'});
+                const result = await fetch('/api/get_user', {credentials: 'include'});
                 const data = await result.json();
-                if (result.ok) setUser(data.user);
-                else setUser(null);
+                if (result.ok) { setUser(data.data); }
+                else { setUser(null); }
             }
             catch (error) {
                 console.error("Failed to fetch user: ", error);
@@ -27,7 +27,7 @@ const Navbar = () => {
 
     const handleSignout = async () => {
         try {
-            const response = await fetch('http://localhost:3000/pages/api/_signout', {
+            const response = await fetch('/api/signout', {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -55,7 +55,7 @@ const Navbar = () => {
             <div className="auth-section">
                 {user ? (
                     <>
-                        <span className = "user-name">Hello, {user.name}</span>
+                        <span className = "user-name">Hello, {user.username}</span>
                         <button className="signout" onClick={handleSignout}>
                             Sign out
                         </button>

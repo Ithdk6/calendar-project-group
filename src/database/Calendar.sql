@@ -62,7 +62,7 @@ CREATE TABLE EventTime(
 );
 
 CREATE TABLE Type(
-  Tid Integer PRIMARY KEY AUTOINCREMENT,
+  Tid Integer PRIMARY KEY,
   Tname TEXT NOT NULL,
   constraint unique_typename unique (Tname)
 );
@@ -110,3 +110,5 @@ CREATE table Has(
   AvailID INTEGER,
   PRIMARY key (UserID, AvailID)
 );
+
+INSERT INTO Type (Tname) VALUES ('School'), ('Work'), ('Personal'), ('Family');
