@@ -58,6 +58,31 @@ class DatabaseAggregateFunctions {
     });
   }
 
+  async findEvents(EventId: number){
+      const sqlCore = "SELECT FROM EventCore WHERE Eid = ?";
+      const sqlTime = "SELECT FROM EventTIme WHERE Eid = ?";
+
+      await this.runQuery("BEGIN TRANSACTION");
+      try{
+        const Core = await this.getQuery(sqlCore, [EventId]);
+        const Time = await this.getQuery(sqlTime, [EventId]);
+        await this.runQuery("COMMIT");
+        const outboxPayload = {
+          title: Core.Title,
+          description: Core.Description,
+          time: `${Time.startTime}-${Time.endTime}`,
+          date: `${Time.day}/${Time.month}/${Time.year}`
+        };
+        
+        return outboxPayload;
+      }
+      catch (err: any){
+        console.error("Transaction failed, rolling back", err);
+        await this.runQuery("ROLLBACK");
+        throw err;
+      }
+  }
+
   async addOutbox(type: string, aggregateId: number, payload: any, createdAt: string): Promise<void> {
     const sql = "INSERT INTO Outbox (outboxType, AggregateId, Payload, CreatedAt, Processed) VALUES (?, ?, ?, ?, ?)";
     await this.runQuery(sql, [type, aggregateId, JSON.stringify(payload), createdAt, 0]);
