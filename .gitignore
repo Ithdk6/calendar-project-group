@@ -1,5 +1,5 @@
 node_modules/*
-calendar.db
 .astro
 .fuse*
-calendar.db
+./src/database/calendar.db
+src/database/calendar.db
