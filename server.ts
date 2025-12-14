@@ -26,13 +26,18 @@ let notificationQueue: Notification[] = [];
 app.use(express.json());
 
 wss.on('connection', (client: Client, req: http.IncomingMessage) => {
-  const userId = req.url?.split('?')[1]?.split('=')[1];
-
-  if (!userId) {
+  let userId: string | undefined;
+  try {
+    const full = `http://localhost${req.url ?? ''}`;
+    userId = new URL(full).searchParams.get('userId') ?? undefined;
+    if (!userId || userId === 'undefined') throw new Error('userId not provided');
+  } catch (err) {
+    console.error('Error parsing userId from URL:', err);
     client.close();
     return;
   }
 
+  userId = String(userId);
   client.userId = userId;
 
   console.log(`Connection from '${userId}'`);
@@ -43,6 +48,7 @@ wss.on('connection', (client: Client, req: http.IncomingMessage) => {
   });
 
   client.on('close', () => {
+    console.log(`'${userId}' disconnected.`);
     clients.delete(userId);
   });
 });
@@ -56,7 +62,7 @@ app.post('/add-notification', (req, res) => {
     status,
     duration,
     scheduleTime: new Date(scheduleTime),
-    userId,
+    userId: String(userId),
   };
 
   notificationQueue.push(notification);
@@ -67,9 +73,10 @@ app.post('/add-notification', (req, res) => {
 });
 
 function sendNotificationToClient(userId: string, notification: string) {
-  const client = clients.get(userId);
+  const lookupKey = String(userId);
+  const client = clients.get(lookupKey);
 
-  if (client && client.readyState === WebSocket.OPEN) {
+  if (client?.readyState === WebSocket.OPEN) {
     client.send(JSON.stringify(notification));
     console.log(`Sending to '${userId}':`, notification);
   } else {

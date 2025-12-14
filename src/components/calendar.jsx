@@ -108,9 +108,8 @@ const Calendar = () => {
         }
       ]);
 
-      // TODO: associate notification with authenticated users
-      //use local userId after event added
-      scheduleNotification(newEvent.title, 0, 60000, fullDateTime, user.userId);
+      if (user)
+        scheduleNotification(newEvent.title, 0, 60000, fullDateTime, user.Uid);
 
       setShowModal(false);
       setNewEvent({ title: '', date: '', time: '', type: 'Personal' });
