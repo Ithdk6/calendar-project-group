@@ -15,6 +15,7 @@ const Calendar = () => {
     time: '',
     type: '3', //Default to personal
   });
+  console.log(events);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -46,8 +47,8 @@ const Calendar = () => {
         .catch((error) => console.log('Failed to fetch events:', error));
 
       console.log("Events:");
-      console.log(events);
     };
+
     fetchEvents();
   }, []);
 
