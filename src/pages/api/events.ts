@@ -64,7 +64,7 @@ export const POST: APIRoute = async ({ request }) => {
     if (!gID) {
       return new Response(JSON.stringify({ error: 'User group not found' }), { status: 404 });
     }
-    await db.createEventWithOutbox(Number(Uid), gID, title, '', date, type);
+    const eId = await db.createEventWithOutbox(Number(Uid), gID, title, '', date, type);
 
     // Save Command ID in database
     const sqlCommand = "INSERT INTO Commands (CommandID) VALUES (?)";
@@ -73,7 +73,8 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({
       status: 'accepted',
       commandId: command.commandId,
-      userId: Uid
+      userId: Uid,
+      eventId: eId
     }), { status: 200 });
 
   } catch (error: any) {

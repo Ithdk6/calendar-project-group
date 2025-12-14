@@ -7,8 +7,10 @@ import '../css/calendar.css'
 
 const Calendar = () => {
   const [events, setEvents] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showAddEventModal, setShowAddEventModal] = useState(false);
+  const [showRemoveEventModal, setShowRemoveEventModal] = useState(false);
   const [user, setUser] = useState(null);
+  const [removeEvent, setRemoveEvent] = useState({});
   const [newEvent, setNewEvent] = useState({
     title: '',
     date: '',
@@ -65,7 +67,7 @@ const Calendar = () => {
   };
 
   const handleAddEvent = () => {
-    setShowModal(true);
+    setShowAddEventModal(true);
   }
 
   const handleSubmit = async (event) => {
@@ -98,6 +100,8 @@ const Calendar = () => {
         throw new Error('Failed to save event');
       }
 
+      const data = await response.json();
+
       //local save data
       setEvents([
         ...events,
@@ -105,19 +109,29 @@ const Calendar = () => {
           title: newEvent.title,
           date: fullDateTime,
           type: newEvent.type,
+          id: data.eventId
         }
       ]);
 
       if (user)
         scheduleNotification(newEvent.title, 0, 60000, fullDateTime, user.Uid);
 
-      setShowModal(false);
+      setShowAddEventModal(false);
       setNewEvent({ title: '', date: '', time: '', type: 'Personal' });
     }
     catch (err) {
       alert(`Failed to create event. Please try again. ${err}`);
     }
   };
+
+  const handleRemoveEventHelper = (arg = {}) => {
+    setRemoveEvent(arg.event);
+
+  }
+
+  const handleRemoveEvent = async (arg) => {
+    console.log("Remove event: ", arg)
+  }
 
   return (
     <div className="calendar-container">
@@ -136,12 +150,13 @@ const Calendar = () => {
             plugins={[dayGridPlugin]}
             initialView="dayGridMonth"
             events={events}
+            eventClick={(arg) => {handleRemoveEventHelper(arg); setShowRemoveEventModal(true);}}
             height="auto"
           />
         </div>
       </main>
 
-      {showModal && (
+      {showAddEventModal && (
         <div className="modal-overlay">
           <div className="modal">
             <h3>Add New Event</h3>
@@ -183,11 +198,20 @@ const Calendar = () => {
               </select>
               <div className="modal-actions">
                 <button type="submit">Add</button>
-                <button type="button" onClick={() => setShowModal(false)}>Cancel</button>
+                <button type="button" onClick={() => setShowAddEventModal(false)}>Cancel</button>
               </div>
             </form>
           </div>
         </div>
+      )}
+      {showRemoveEventModal && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h2>Remove Event?</h2>
+              <button onClick={handleRemoveEvent}>Remove Event</button>
+              <button onClick={() => {setShowRemoveEventModal(false); handleRemoveEventHelper([])}}>Cancel</button>
+            </div>
+          </div>
       )}
     </div>
   );
