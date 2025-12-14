@@ -62,7 +62,7 @@ CREATE TABLE EventTime(
 );
 
 CREATE TABLE Type(
-  Tid Integer PRIMARY KEY AUTOINCREMENT,
+  Tid Integer PRIMARY KEY,
   Tname TEXT NOT NULL,
   constraint unique_typename unique (Tname)
 );

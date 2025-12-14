@@ -45,15 +45,15 @@ export const GET: APIRoute = async ({ request }) => {
     const cIDs = await db.findCidsFromGCal(Number(gID));
 
     //get all events from all calendars the user is apart of at the same time via map
-    const eventPromises = cIDs.map((c: any) => db.findEidsFromCalendar(c));
-    const results = await Promise.all(eventPromises);
-
-    console.log("Events:", results.flat());
+    const eventIds = (await Promise.all(cIDs.map((c: any) => db.findEidsFromCalendar(c))))[0];
+    console.log("Events IDs:", eventIds);
+    const events = await Promise.all(eventIds.map((e: any) => db.findEvent(e)));
+    console.log("Events:", events.flat());
 
     return new Response(JSON.stringify({
       status: 'accepted',
       userId: userId,
-      events: results
+      events: events
     }), { status: 200 });
 
   } catch (error: any) {

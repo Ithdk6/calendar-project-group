@@ -13,7 +13,7 @@ const Calendar = () => {
     title: '',
     date: '',
     time: '',
-    type: 'Personal', //Default to personal
+    type: '3', //Default to personal
   });
 
   useEffect(() => {
@@ -34,6 +34,9 @@ const Calendar = () => {
         .then((res) => res.json())
         .then((data) => setEvents(data.events))
         .catch((error) => console.log('Failed to fetch events:', error));
+
+      console.log("Events:");
+      console.log(events);
     };
 
     if (!user)
@@ -179,10 +182,10 @@ const Calendar = () => {
                 value={newEvent.type}
                 onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
               >
-                <option value="School">School</option>
-                <option value="Work">Work</option>
-                <option value="Personal">Personal</option>
-                <option value="Family">Family</option>
+                <option value="1">School</option>
+                <option value="2">Work</option>
+                <option value="3">Personal</option>
+                <option value="4">Family</option>
               </select>
               <div className="modal-actions">
                 <button type="submit">Add</button>

@@ -58,29 +58,38 @@ class DatabaseAggregateFunctions {
     });
   }
 
-  async findEvents(EventId: number){
-      const sqlCore = "SELECT FROM EventCore WHERE Eid = ?";
-      const sqlTime = "SELECT FROM EventTIme WHERE Eid = ?";
+  async findEvent(EventId: number) {
+    const sqlCore = "SELECT * FROM EventCore WHERE Eid=?";
+    const sqlTime = "SELECT * FROM EventTime WHERE EventID=?";
+    const sqlTypeId = "SELECT * FROM EventType WHERE EventID=?";
+    const sqlType = "SELECT Tname FROM Type WHERE Tid=?";
 
-      try{
-        const Core = await this.getQuery(sqlCore, [EventId]);
-        const Time = await this.getQuery(sqlTime, [EventId]);
-        const outboxPayload = {
-          title: Core.Title,
-          description: Core.Description,
-          starttime: Time.startTime,
-          endtime:Time.endTime,
-          day: Time.day,
-          month: Time.month,
-          year: Time.year
-        };
-        
-        return outboxPayload;
-      }
-      catch (err: any){
-        console.error("Transaction failed", err);
-        throw err;
-      }
+    try {
+      const Core = await this.getQuery(sqlCore, [EventId]);
+      const Time = await this.getQuery(sqlTime, [EventId]);
+      const TypeID = await this.getQuery(sqlTypeId, [EventId]);
+      const Type = await this.getQuery(sqlType, TypeID.TypeID);
+
+      console.log("findEvents:");
+      console.log(Core);
+      console.log(Time);
+      console.log(TypeID);
+      console.log(Type);
+      const outboxPayload = {
+        title: Core.Title,
+        date: new Date(Time.EYear, Time.Month, Time.Day, Time.StartTime.split(":")[0] as unknown as number, Time.StartTime.split(":")[1] as unknown as number),
+        type: Type.Tname
+      };
+
+      console.log("outbox payload");
+      console.log(outboxPayload);
+
+      return outboxPayload;
+    }
+    catch (err: any) {
+      console.error("Transaction failed", err);
+      throw err;
+    }
   }
 
   async addOutbox(type: string, aggregateId: number, payload: any, createdAt: string): Promise<void> {
@@ -154,13 +163,8 @@ class DatabaseAggregateFunctions {
       const sqlETime = "INSERT INTO EventTime (EventID, StartTime, EndTime, Day, Month, EYear) VALUES (?, ?, ?, ?, ?, ?)";
       await this.runQuery(sqlETime, [newEventID, startTime, endTime, day, month, year]);
 
-      //find if type exists, if not insert it
-      const sqlFindType = "SELECT Tid FROM Type WHERE Tname = ?";
-      const existingType = await this.getQuery(sqlFindType, [type]);
-      let typeID;
-
       const sqlEventType = "INSERT INTO EventType (TypeID, EventID) VALUES (?, ?)";
-      await this.runQuery(sqlEventType, [typeID, newEventID]);
+      await this.runQuery(sqlEventType, [Number(type), newEventID]);
 
       //find calendar ID from GCal for that group
       const calIds = await this.findCidsFromGCal(groupId);

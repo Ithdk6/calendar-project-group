@@ -16,7 +16,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (!token) {
     return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
   }
-  interface Token{
+  interface Token {
     userId?: string | number;
     userid?: string | number;
   }
@@ -27,7 +27,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     //check if user is known
     if (!Uid) {
-        return new Response(JSON.stringify({ error: 'Token missing user identity' }), { status: 401 });
+      return new Response(JSON.stringify({ error: 'Token missing user identity' }), { status: 401 });
     }
   } catch (error) {
     console.log(`Error: ${error}`);
@@ -52,7 +52,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Unpack payload
-    const { title, date, ty } = command.payload || {};
+    const { title, date, type, time } = command.payload || {};
 
     // Validate payload
     if (!command.payload || !title || !date) {
@@ -64,7 +64,7 @@ export const POST: APIRoute = async ({ request }) => {
     if (!gID) {
       return new Response(JSON.stringify({ error: 'User group not found' }), { status: 404 });
     }
-    await db.createEventWithOutbox(Number(Uid), gID, title, '', date, ty);
+    await db.createEventWithOutbox(Number(Uid), gID, title, '', date, type);
 
     // Save Command ID in database
     const sqlCommand = "INSERT INTO Commands (CommandID) VALUES (?)";
