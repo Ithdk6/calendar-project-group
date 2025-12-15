@@ -6,28 +6,8 @@ on:
     branches: [ dev ]
 
 jobs:
-  test-javascript:
-    name: JavaScript Tests
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        id: setup-node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Dependencies
-        run: npm install ci
-
   run-tests:
-    name: database tests
+    name: Build and Test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,12 +20,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install Dependencies
         run: |
           npm install ci
-          npm install --save-dev tsx
-          npm install mocha chai --save-dev
 
       - name: Setup Database
         env:
@@ -59,12 +38,17 @@ jobs:
           find . -name "*.db" -exec ls -lh {} +
           echo "--- End of search ---"
 
-      - name: Run database function tests
+      - name: Run mocha BDD testing
         id: database-testing
         env:
           DB_NAME: testdb.db
         run: |
           npm test
+          
+      - name: Run Script-based tests
+        env:
+          DB_NAME: testdb.db
+        run: |
           npx tsx Testing/test_schema.ts
           npx tsx Testing/runQuery_test.ts
           npx tsx Testing/getQuery_test.ts
