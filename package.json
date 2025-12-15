@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "mocha"
+    "test": "mocha --loader tsnode/esm 'test/**/*.ts'"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
@@ -36,6 +36,7 @@
     "@types/ws": "^8.18.1",
     "chai": "^6.2.1",
     "concurrently": "^9.2.1",
-    "mocha": "^11.7.5"
+    "mocha": "^11.7.5",
+    "ts-node": "^10.9.2"
   }
 }
