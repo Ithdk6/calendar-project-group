@@ -45,6 +45,7 @@ jobs:
         run: |
           npm install ci
           npm install --save-dev tsx
+          npm install mocha chai --save-dev
 
       - name: Setup Database
         env:
@@ -63,8 +64,8 @@ jobs:
         env:
           DB_NAME: testdb.db
         run: |
+          npm test
           npx tsx Testing/test_schema.ts
           npx tsx Testing/runQuery_test.ts
           npx tsx Testing/getQuery_test.ts
           npx tsx Testing/outbox_test.ts
-          npx tsx Testing/userWithOutbox_test.ts

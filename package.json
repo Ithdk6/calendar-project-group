@@ -6,7 +6,8 @@
     "dev": "concurrently \"astro dev\" \"npx tsx server.ts\"",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "mocha"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
@@ -33,6 +34,8 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/sqlite3": "^3.1.11",
     "@types/ws": "^8.18.1",
-    "concurrently": "^9.2.1"
+    "chai": "^6.2.1",
+    "concurrently": "^9.2.1",
+    "mocha": "^11.7.5"
   }
 }

@@ -3,3 +3,4 @@ node_modules/*
 .fuse*
 ./src/database/calendar.db
 src/database/calendar.db
+.vs
