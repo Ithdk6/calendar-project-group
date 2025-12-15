@@ -94,4 +94,4 @@ Our application is a simple calendar logging system. It allows users to create e
 	- if on windows (in powershell):
 		- .\setup.ps1
 
-	- and you are ready to go, navigate to localhost:3001 in browser of choice to go to app
+	- and you are ready to go, navigate to localhost:4321 in browser of choice to go to app
