@@ -1,7 +1,8 @@
 const expect =  import('chai');
-const db =  import('../src/database/databaseAggregateFunctions');
+const { db } =  import('../src/database/databaseAggregateFunctions');
 
 describe('Add User', function () {
+
 
     it('should return User id when user is added', async function () {
 
