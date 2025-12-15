@@ -82,3 +82,13 @@ Our application is a simple calendar logging system. It allows users to create e
 -   Features: Group syncing between users, event scheduling, time tables
 
 -   How it solves the problem: It is an easy and simple way to schedule and keep track of any important dates and times.
+
+### 8. How to run
+
+-   Install Docker from link: https://www.docker.com/products/docker-desktop/
+
+-   open terminal in root directory and run: docker build -t syncup-dev .
+	
+	- then run: docker run -p 3001:3001 -p 4321:4321 -v ${PWD}/src/database/calendar.db:/app/src/database/calendar.db syncup-dev
+
+	- and you are ready to go, navigate to localhost:3001 to go to app

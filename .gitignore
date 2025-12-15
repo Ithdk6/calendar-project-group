@@ -1,6 +1,4 @@
 node_modules/*
 .astro
 .fuse*
-./src/database/calendar.db
-src/database/calendar.db
 .vs
