@@ -225,8 +225,10 @@ const Calendar = () => {
           <div className="modal-overlay">
             <div className="modal">
               <h2>Remove Event?</h2>
-              <button onClick={handleRemoveEvent}>Remove Event</button>
-              <button onClick={() => {setShowRemoveEventModal(false); handleRemoveEventHelper([])}}>Cancel</button>
+                <div className="modal-actions">
+                    <button onClick={handleRemoveEvent}>Remove Event</button>
+                    <button type="button" onClick={() => {setShowRemoveEventModal(false); handleRemoveEventHelper([])}}>Cancel</button>
+                </div>
             </div>
           </div>
       )}
