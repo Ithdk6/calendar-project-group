@@ -1,7 +1,12 @@
 const expect = require('chai').expect;
-const { db } = require('../src/database/databaseAggregateFunctions.ts');
+let db;
 
 describe('Add Event', function () {
+
+    before(async function(){
+        const {module} = await import('../src/database/databaseAggregateFunctions.ts');
+        db = module;
+    });
     it('should return Evnet id when event is added', async function () {
         // A simple function to test (in a real app, this would be imported)
         const uid = await db.createUserWithOutbox("TestUser", "TestPass", "TestEmail", "3");

@@ -2,6 +2,11 @@ const expect = require('chai').expect;
 const { db } = require('../src/database/databaseAggregateFunctions.ts');
 
 describe('Add User', function () {
+    before(async function(){
+        const {module} = await import('../src/database/databaseAggregateFunctions.ts');
+        db = module;
+    });
+
     it('should return User id when user is added', async function () {
 
         const uid = await db.createUserWithOutbox("TestUser", "TestPass", "TestEmail", "2");
