@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "mocha"
+    "test": "mocha --require ts-node/register 'test/**/*.ts"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
