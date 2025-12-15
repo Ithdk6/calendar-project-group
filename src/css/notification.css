@@ -1,0 +1,26 @@
+.notification {
+  position: fixed;
+  top: 6rem;
+  right: 2rem;
+  padding: 0.8rem 0.9rem 0.8rem 0.9rem;
+  border-radius: 0.6rem;
+  font-weight: bold;
+  animation-name: save-button-float-in;
+  animation-timing-function: cubic-bezier();
+  animation-duration: 0.5s;
+  z-index: 3;
+}
+
+.neutralColors {
+  background-color: Grey;
+  color: white;
+}
+.successColors {
+  background-color: #1c86ff;
+  color: white;
+}
+
+.failColors {
+  background-color: #aa146d;
+  color: white;
+}

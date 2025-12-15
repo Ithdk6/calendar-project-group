@@ -1,0 +1,32 @@
+name: Continuous Deployment
+
+on:
+  pull_request:
+    branches: [ main ]
+
+  push:
+    branches: [ main ]
+
+jobs:
+  deployment:
+    name: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: |
+        npm ci
+
+        #if we ever get a seperate server to run this then we will update 
+        #CD to run with that server otherwise it will be a local deployment using a docker file

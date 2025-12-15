@@ -10,43 +10,43 @@ Our application plans to address the problem of having something else going on w
 ### Objectives
 
 -   Provide an easy way to store and edit dates of important events or deadlines
-    
+
 -   Allows for the creation and syncing of group calendars
-    
+
 -   Add timeframes for each day
-    
+
 
 ### Scope
-   **Will include:** 
+**Will include:**
 
 -   Personal calendar editing & saving
-    
+
 -   Sharing/syncing with others
-    
+
 -   Categories
-    
+
 
 -   Work
-    
--   School
-    
--   Personal
-    
--   Etc.
-    
 
--   Choose whether or not to share personal calendar’s event content, or just “busy” status  
-      
-    
-  **Won’t include:**
-    
+-   School
+
+-   Personal
+
+-   Etc.
+
+
+-   Choose whether or not to share personal calendar’s event content, or just “busy” status
+
+
+**Won’t include:**
+
 
 -   GPS/location sharing
-    
+
 -   Messaging
-    
+
 -   LLMs
-    
+
 
 ### Proposed Solution
 
@@ -55,30 +55,41 @@ Our application is a simple calendar logging system. It allows users to create e
 ### Technology Stack
 
 -   NodeJS
-    
+
 -   Astro framework
-    
+
 -   sqlite3
-    
+
 -   Languages:
-    
+
 
 -   HTML
-    
+
 -   CSS
-    
+
 -   JS
-    
+
 -   Typescript
-    
--   SQL  
-      
-    
+
+-   SQL
+
+
 
 ### 7. Expected Outcomes
 
 -   Prototype: Personal calendar, Caldav syncing with server, rudimentary UI
-    
+
 -   Features: Group syncing between users, event scheduling, time tables
-    
+
 -   How it solves the problem: It is an easy and simple way to schedule and keep track of any important dates and times.
+
+### 8. How to run
+
+-   Install Docker from link: https://www.docker.com/products/docker-desktop/
+
+-   open terminal in root directory and run:
+	- node src/database/databaseSetup.js
+	- docker build -t syncup-dev .
+	- docker run -p 3001:3001 -p 4321:4321 -v ${PWD}/src/database/calendar.db:/app/src/database/calendar.db syncup-dev
+
+	- and you are ready to go, navigate to localhost:3001 to go to app

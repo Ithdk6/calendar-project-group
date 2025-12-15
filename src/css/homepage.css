@@ -1,0 +1,74 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.homepage-container {
+    padding-top: 60px;
+}
+
+.homepage-header {
+    background-color: #13aa81;
+    color: white;
+    text-align: center;
+    padding: 60px 20px 40px;
+}
+
+.homepage-header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.homepage-header p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.getStarted {
+    background-color: white;
+    color: #13aa81;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.getStarted:hover {
+    background-color: #d2f4ea;
+}
+
+/* Content sections */
+.homepage-content {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.homepage-content h2 {
+    color: #13aa81;
+    font-size: 1.8em;
+    margin-bottom: 10px;
+}
+
+.homepage-content p {
+    font-size: 1em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Services list */
+.services {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.service-item {
+    margin-bottom: 8px;
+}
