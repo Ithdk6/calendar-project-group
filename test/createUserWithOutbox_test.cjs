@@ -2,10 +2,18 @@ const expect = require('chai').expect;
 const { db } = require('../src/database/databaseAggregateFunctions.ts');
 
 describe('Add User', function () {
-    before(async function(){
-        const {module} = await import('../src/database/databaseAggregateFunctions.ts');
-        db = module;
-    });
+    before(async function() {
+    // We 'await' the import because ESM is asynchronous by nature
+    const module = await import('../src/database/databaseAggregateFunctions.ts');
+    
+    // Assign the named export 'db' to our local variable
+    db = module.db; 
+    
+    // Safety check: Immediate feedback if the 'sync' failed
+    if (!db) {
+        throw new Error("Failed to load 'db' from the module. Check your exports!");
+    }
+});
 
     it('should return User id when user is added', async function () {
 
