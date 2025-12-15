@@ -1,5 +1,5 @@
-import { expect } from 'chai';
-import { db } from '../src/database/databaseAggregateFunctions';
+const expect =  import('chai');
+const db =  import('../src/database/databaseAggregateFunctions');
 
 describe('Add Event', function () {
     it('should return Evnet id when event is added', async function () {
