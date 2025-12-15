@@ -24,7 +24,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm install ci
+          npm ci
+          npm install --save-dev mocha chai
 
       - name: Setup Database
         env:
