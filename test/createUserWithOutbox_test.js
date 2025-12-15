@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { db } from '../src/database/databaseAggregateFunctions.ts';
+import { db } from '../src/database/databaseAggregateFunctions';
 
 describe('Add User', function () {
 
