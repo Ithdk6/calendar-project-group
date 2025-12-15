@@ -1,9 +1,7 @@
-import { expect } from 'chai';
+import { expect } from 'chai'; 
 import { db } from '../src/database/databaseAggregateFunctions';
 
 describe('Add User', function () {
-
-
     it('should return User id when user is added', async function () {
 
         const uid = await db.createUserWithOutbox("TestUser", "TestPass", "TestEmail", "2");

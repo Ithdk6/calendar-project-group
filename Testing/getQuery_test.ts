@@ -1,5 +1,4 @@
-const { db } = require('../src/database/databaseAggregateFunctions.ts');
-
+import { db } from '../src/database/databaseAggregateFunctions.ts';
 /**
  * Generates a random string.
  * @param {number} length - length of string

@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'chai'; 
 import { db } from '../src/database/databaseAggregateFunctions';
 
 describe('Add Event', function () {
