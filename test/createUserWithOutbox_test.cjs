@@ -1,5 +1,5 @@
-const expect = require('chai').expect;
-const { db } = require('../src/database/databaseAggregateFunctions.ts');
+import { expect } from 'chai';
+import { db } from '../src/database/databaseAggregateFunctions';
 
 describe('Add User', function () {
     before(async function() {

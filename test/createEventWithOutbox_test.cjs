@@ -1,20 +1,7 @@
-const expect = require('chai').expect;
-let db;
+import { expect } from 'chai';
+import { db } from '../src/database/databaseAggregateFunctions';
 
 describe('Add Event', function () {
-
-    before(async function() {
-    // We 'await' the import because ESM is asynchronous by nature
-    const module = await import('../src/database/databaseAggregateFunctions.ts');
-    
-    // Assign the named export 'db' to our local variable
-    db = module.db; 
-    
-    // Safety check: Immediate feedback if the 'sync' failed
-    if (!db) {
-        throw new Error("Failed to load 'db' from the module. Check your exports!");
-    }
-});
     it('should return Evnet id when event is added', async function () {
         // A simple function to test (in a real app, this would be imported)
         const uid = await db.createUserWithOutbox("TestUser", "TestPass", "TestEmail", "3");
