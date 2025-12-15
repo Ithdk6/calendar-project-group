@@ -87,8 +87,9 @@ Our application is a simple calendar logging system. It allows users to create e
 
 -   Install Docker from link: https://www.docker.com/products/docker-desktop/
 
--   open terminal in root directory and run: docker build -t syncup-dev .
-	
-	- then run: docker run -p 3001:3001 -p 4321:4321 -v ${PWD}/src/database/calendar.db:/app/src/database/calendar.db syncup-dev
+-   open terminal in root directory and run:
+	- node src/database/databaseSetup.js
+	- docker build -t syncup-dev .
+	- docker run -p 3001:3001 -p 4321:4321 -v ${PWD}/src/database/calendar.db:/app/src/database/calendar.db syncup-dev
 
 	- and you are ready to go, navigate to localhost:3001 to go to app
