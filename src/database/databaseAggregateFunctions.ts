@@ -16,6 +16,32 @@ class DatabaseAggregateFunctions {
     });
   }
 
+  exec(sql: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.db.exec(sql, (err: Error | null) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        resolve();
+      });
+    });
+  }
+
+  close(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.db.close((err: Error | null) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        resolve();
+      });
+    });
+  }
+
   //gets all rows in database from sql statement
   getAllQuery(sql: string, params: any[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -373,7 +399,12 @@ class DatabaseAggregateFunctions {
   }
 }
 
+function createDatabase(name: string) {
+  return new DatabaseAggregateFunctions(name);
+}
+
 // This is way better than instantiating the db class in every endpoint
 const dbName = process.env.DB_NAME || './src/database/calendar.db';
-const db = new DatabaseAggregateFunctions(dbName);
-export { db };
+const db = createDatabase(dbName);
+
+export { DatabaseAggregateFunctions, createDatabase, db };
