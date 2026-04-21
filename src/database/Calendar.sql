@@ -48,7 +48,8 @@ CREATE TABLE Calendar(
 CREATE TABLE EventCore(
   Eid INTEGER PRIMARY KEY AUTOINCREMENT,
   Title TEXT NOT NULL,
-  Description TEXT
+  Description TEXT,
+  Summary TEXT
 );
 
 --descriptor table for event via splitting the original event table into a core and a time table
