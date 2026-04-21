@@ -82,6 +82,11 @@ class DatabaseAggregateFunctions {
         resolve(row);
       });
     });
+    }
+
+  async updateEventSummary(eventId: number, summary: string){
+    const sql = "UPDATE EventCore SET Summary = ? WHERE Eid = ?";
+    await this.runQuery(sql, [summary, eventId]);
   }
 
   async findEvent(EventId: number) {
