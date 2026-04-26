@@ -1,149 +1,219 @@
 ---
-import Navbar from '../components/navbar.astro'
+import Navbar from '../components/navbar.astro';
+import Notification from '../components/notification.astro';
 import '../css/calendar.css';
 ---
-<div class="calendar-container">
-    <Navbar />
 
-    <main class="calendar-main">
-        <div class="calendar-header">
-            <h2>My Calendar</h2>
-            <button id="add-event-btn">Add Event</button>
-        </div>
+<Navbar />
+<Notification />
 
-        <div id="calendar"></div>
-    </main>
+<br/>
+<br/>
 
-    <!-- Add Modal -->
-    <div id="add-modal" class="modal-overlay hidden">
-        ...
-    </div>
+<main class="calendar-main">
+  <div class="calendar-header">
+    <h2>My Calendar</h2>
+    <button id="addEventBtn">Add Event</button>
+  </div>
 
-    <!-- Remove Modal -->
-    <div id="remove-modal" class="modal-overlay hidden">
-        ...
-    </div>
+  <div class="calendar-grid">
+    <div id="calendar"></div>
+  </div>
+</main>
+
+<!-- Add Event Modal -->
+<div id="addModal" class="modal-overlay hidden">
+  <div class="modal">
+    <h3>Add New Event</h3>
+    <form id="eventForm">
+      <label>Title</label>
+      <input id="title" type="text" required />
+
+      <label>Date</label>
+      <input id="date" type="date" required />
+
+      <label>Time</label>
+      <input id="time" type="time" required />
+
+      <label>Type</label>
+      <select id="type">
+        <option value="1">School</option>
+        <option value="2">Work</option>
+        <option value="3">Personal</option>
+        <option value="4">Family</option>
+      </select>
+
+      <div class="modal-actions">
+        <button type="submit">Add</button>
+        <button type="button" id="cancelAdd">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
 
-<script type="module">
-    import { Calendar } from '@fullcalendar/core';
-    import dayGridPlugin from '@fullcalendar/daygrid';
+<!-- Remove Modal -->
+<div id="removeModal" class="modal-overlay hidden">
+  <div class="modal">
+    <h2>Remove Event?</h2>
+    <div class="modal-actions">
+      <button id="confirmRemove">Remove Event</button>
+      <button id="cancelRemove">Cancel</button>
+    </div>
+  </div>
+</div>
 
-    document.addEventListener('DOMContentLoaded', () => {
+<script>
+  import { Calendar } from '@fullcalendar/core';
+  import dayGridPlugin from '@fullcalendar/daygrid';
 
-        const calendarEl = document.getElementById('calendar');
-        const addModal = document.getElementById('add-modal');
-        const removeModal = document.getElementById('remove-modal');
+  let events = [];
+  let user = null;
+  let selectedEvent = null;
 
-        const show = (el) => el.classList.remove('hidden');
-        const hide = (el) => el.classList.add('hidden');
+  const calendarEl = document.getElementById('calendar');
+  const addModal = document.getElementById('addModal');
+  const removeModal = document.getElementById('removeModal');
 
-        let events = [];
-        let selectedEvent = null;
+  const form = document.getElementById('eventForm');
 
-        // Initialize calendar once
-        const calendar = new Calendar(calendarEl, {
-            plugins: [dayGridPlugin],
-            initialView: 'dayGridMonth',
-            height: 'auto',
-            events: events,
-            eventClick(info) {
-                selectedEvent = info.event;
-                show(removeModal);
-            }
+  // FETCH USER
+  async function fetchUser() {
+    try {
+      const res = await fetch('/api/get_user', { credentials: 'include' });
+      const data = await res.json();
+      if (res.ok)
+        user = data.data;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // FETCH EVENTS
+  async function fetchEvents() {
+    try {
+      const res = await fetch('/api/get_events', { credentials: 'include' });
+      const data = await res.json();
+      events = data.events || [];
+      calendar.addEventSource(events);
+    } catch (e) {
+      console.error('Failed to fetch events', e);
+    }
+  }
+
+  // CALENDAR INIT
+  const calendar = new Calendar(calendarEl, {
+    plugins: [dayGridPlugin],
+    initialView: 'dayGridMonth',
+    height: 'auto',
+    events: [],
+    eventClick(info) {
+      selectedEvent = info.event;
+      removeModal.classList.remove('hidden');
+    }
+  });
+
+  calendar.render();
+
+  // MODAL CONTROLS
+  document.getElementById('addEventBtn').onclick = () => {
+    addModal.classList.remove('hidden');
+  };
+
+  document.getElementById('cancelAdd').onclick = () => {
+    addModal.classList.add('hidden');
+  };
+
+  document.getElementById('cancelRemove').onclick = () => {
+    removeModal.classList.add('hidden');
+    selectedEvent = null;
+  };
+
+  // ADD EVENT
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('title').value;
+    const date = document.getElementById('date').value;
+    const time = document.getElementById('time').value;
+    const type = document.getElementById('type').value;
+
+    const fullDateTime = `${date}T${time}`;
+    const commandId = crypto.randomUUID();
+
+    const payload = {
+      commandId,
+      payload: { title, date: fullDateTime, type, time: fullDateTime }
+    };
+
+    try {
+      const res = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'include'
+      });
+
+      if (!res.ok)
+        throw new Error('Failed');
+
+      const data = await res.json();
+
+      const newEvent = {
+        title,
+        date: fullDateTime,
+        id: data.eventId
+      };
+
+      calendar.addEvent(newEvent);
+
+      if (user) {
+        fetch('http://localhost:3001/add-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: title,
+            status: 0,
+            duration: 60000,
+            scheduleTime: fullDateTime,
+            userId: user.Uid
+          })
         });
-        calendar.render();
+      }
 
-        // Fetch events
-        async function fetchEvents() {
-            try {
-                const res = await fetch('/api/get_events', { credentials: 'include' });
-                const data = await res.json();
-                events = data.events || [];
-                calendar.removeAllEvents();
-                events.forEach(e => calendar.addEvent(e));
-            } catch (err) {
-                console.error("Failed to fetch events", err);
-            }
-        }
+      addModal.classList.add('hidden');
+      form.reset();
+    } catch (err) {
+      alert('Failed to create event');
+    }
+  };
 
-        // Fetch user if needed
-        async function fetchUser() {
-            try {
-                const res = await fetch('/api/get_user', { credentials: 'include' });
-                const data = await res.json();
-            } catch (err) {
-                console.error("Failed to fetch user", err);
-            }
-        }
+  // REMOVE EVENT
+  document.getElementById('confirmRemove').onclick = async () => {
+    if (!selectedEvent) return;
 
-        fetchUser();
-        fetchEvents();
+    const payload = {
+      commandId: crypto.randomUUID(),
+      payload: { Eid: selectedEvent.id }
+    };
 
-        // Modal handlers
-        document.getElementById('add-event-btn')
-            .addEventListener('click', () => show(addModal));
-        document.getElementById('cancel-add')
-            .addEventListener('click', () => hide(addModal));
-        document.getElementById('cancel-remove')
-            .addEventListener('click', () => hide(removeModal));
+    try {
+      const res = await fetch('/api/remove_event', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
 
-        // Add event form
-        document.getElementById('add-event-form')
-            .addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const title = document.getElementById('title').value;
-                const date = document.getElementById('date').value;
-                const time = document.getElementById('time').value;
-                const type = document.getElementById('type').value;
-                const fullDateTime = `${date}T${time}`;
+      if (!res.ok)
+        throw new Error('Failed');
 
-                try {
-                    const res = await fetch('/api/events', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({
-                            commandId: crypto.randomUUID(),
-                            payload: { title, date: fullDateTime, type }
-                        })
-                    });
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
-                    if (!res.ok) throw new Error("Failed to save event");
-                    const data = await res.json();
-
-                    calendar.addEvent({
-                        id: data.eventId,
-                        title,
-                        start: fullDateTime
-                    });
-
-                    hide(addModal);
-                    e.target.reset();
-
-                } catch {
-                    alert("Failed to create event.");
-                }
-            });
-
-        // Remove event
-        document.getElementById('confirm-remove')
-            .addEventListener('click', async () => {
-                if (!selectedEvent) return;
-                try {
-                    const res = await fetch('/api/remove_event', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            commandId: crypto.randomUUID(),
-                            payload: { Eid: selectedEvent.id }
-                        })
-                    });
-                    if (!res.ok) throw new Error("Failed");
-                    selectedEvent.remove();
-                    hide(removeModal);
-                } catch {
-                    alert("Failed to remove event.");
-                }
-            });
-    });
+  // -------------------------
+  // INIT
+  // -------------------------
+  await fetchUser();
+  await fetchEvents();
 </script>
