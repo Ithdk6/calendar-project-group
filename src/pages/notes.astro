@@ -1,0 +1,75 @@
+---
+import Navbar from '../components/navbar.astro';
+import VoiceRecorder from '../components/VoiceRecorder.jsx';
+import '../css/notes.css';
+---
+
+<div class="notes-container">
+    <Navbar />
+
+    <main class="notes-main">
+        <div class="notes-header">
+            <h2>My Notes</h2>
+            <button id="save-notes-btn">Save Notes</button>
+        </div>
+
+        <div class="notes-grid">
+
+            <div class="notes-panel">
+                <h3>Manual Notes</h3>
+                <textarea
+                        id="manual-notes"
+                        placeholder="Start typing your notes here..."
+                ></textarea>
+            </div>
+
+            <div class="notes-panel">
+                <h3>Auto Dictation</h3>
+
+                <VoiceRecorder
+                    client:load
+                    eventId={1}
+                />
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    const saveBtn = document.getElementById('save-notes-btn');
+    const manualNotes = document.getElementById('manual-notes');
+    const dictationOutput = document.getElementById('dictation-output');
+
+
+    saveBtn?.addEventListener('click', async () => {
+        const payload = {
+            commandId: crypto.randomUUID(),
+            payload: {
+                manualNotes: manualNotes?.textContent,
+                dictationOutput: dictationOutput?.textContent,
+            }
+        };
+
+        try {
+            const res = await fetch('/api/save_notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                credentials: 'include'
+            });
+
+            if (!res.ok) throw new Error("Failed to save");
+
+            alert("Notes saved successfully!");
+        } catch (err) {
+            alert("Failed to save notes.");
+            console.error(err);
+        }
+    });
+
+    window.updateDictation = (text) => {
+        const textarea = document.getElementById('dictation-output');
+        if (textarea) textarea.value = text;
+    };
+</script>

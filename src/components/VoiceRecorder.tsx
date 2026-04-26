@@ -9,6 +9,8 @@ export default function VoiceRecorder({ eventId }: VoiceRecorderProps) {
   const [transcript, setTranscript] = useState('');
   const [status, setStatus] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
+  const isManuallyStopped = useRef(false);
+  const isStarting = useRef(false);
 
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -37,9 +39,27 @@ export default function VoiceRecorder({ eventId }: VoiceRecorderProps) {
     };
 
     recognition.onend = () => {
-      setListening(false);
-      setStatus('Stopped listening.');
+      if (isStarting.current) return;
+
+      if (isManuallyStopped.current) {
+          setListening(false);
+          setStatus('Stopped listening');
+          return;
+      }
+
+      try {
+          recognition.start();
+          setStatus('Restarting...');
+      } catch (error) {
+          console.warn('Restart failed: ', error);
+      }
     };
+
+    recognition.onstart = () => {
+        isStarting.current = false;
+        setListening(true);
+        setStatus('Starting...');
+    }
 
     recognitionRef.current = recognition;
 
@@ -72,14 +92,14 @@ export default function VoiceRecorder({ eventId }: VoiceRecorderProps) {
     if (!ok) return;
 
     const rec = recognitionRef.current;
-    if (!rec) {
-      setStatus('SpeechRecognition not available.');
-      return;
-    }
+    if (!rec) return;
+
+    isManuallyStopped.current = false;
+    isStarting.current = true;
+
     try {
       rec.start();
-      setListening(true);
-      setStatus('Listening...');
+      setStatus('Starting...');
     } catch (err) {
       console.error('Failed to start recognition', err);
       setStatus('Failed to start recognition.');
@@ -89,45 +109,24 @@ export default function VoiceRecorder({ eventId }: VoiceRecorderProps) {
   const stopListening = () => {
     const rec = recognitionRef.current;
     if (!rec) return;
+
+    isManuallyStopped.current = true;
+
     try {
       rec.stop();
-      setListening(false);
-      setStatus('Stopped (click Summarize to save).');
     } catch (err) {
       console.error('Failed to stop recognition', err);
       setStatus('Failed to stop recognition.');
     }
   };
 
-  const saveSummary = async () => {
-    setStatus('Summarizing and saving...');
-    try {
-      const res = await fetch('/api/transcript', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({ eventId, transcript })
-      });
-
-      const body = await res.json();
-      if (!res.ok) {
-        setStatus('Save failed: ' + (body.error || res.statusText));
-        return;
-      }
-
-      setStatus('Saved summary.');
-    } catch (err) {
-      console.error(err);
-      setStatus('Network or server error while saving.');
-    }
-  };
+  // Moved summary save and notes save to the same function in notes.astro
 
   return (
     <div className="voice-recorder">
       <div style={{ marginBottom: 8 }}>
         <button onClick={startListening} disabled={listening}>Start</button>
         <button onClick={stopListening} disabled={!listening}>Stop</button>
-        <button onClick={saveSummary} disabled={!transcript}>Summarize & Save</button>
       </div>
 
       <div style={{ marginBottom: 8 }}>
@@ -141,6 +140,8 @@ export default function VoiceRecorder({ eventId }: VoiceRecorderProps) {
           onChange={(e) => setTranscript(e.target.value)}
           rows={8}
           style={{ width: '100%' }}
+          readOnly={true}
+          placeholder={"Auto-dictation will start here..."}
         />
       </div>
     </div>

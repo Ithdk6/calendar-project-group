@@ -51,11 +51,12 @@ import '../css/calendar.css';
   </div>
 </div>
 
-<!-- Remove Modal -->
+<!-- Event Modal -->
 <div id="removeModal" class="modal-overlay hidden">
   <div class="modal">
-    <h2>Remove Event?</h2>
+    <h2>Event Actions</h2>
     <div class="modal-actions">
+      <button id="eventNotes">Note Sheet</button>
       <button id="confirmRemove">Remove Event</button>
       <button id="cancelRemove">Cancel</button>
     </div>
@@ -73,6 +74,7 @@ import '../css/calendar.css';
   const calendarEl = document.getElementById('calendar');
   const addModal = document.getElementById('addModal');
   const removeModal = document.getElementById('removeModal');
+  const eventNotes = document.querySelector<HTMLButtonElement>("#eventNotes");
 
   const form = document.getElementById('eventForm');
 
@@ -210,6 +212,9 @@ import '../css/calendar.css';
       console.error(e);
     }
   };
+
+  // NAV TO NOTES
+  eventNotes?.addEventListener('click', () => {globalThis.location.href = '/notes'})
 
   // -------------------------
   // INIT
