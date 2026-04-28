@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 
 // read the sql file content
 async function readFileContent() {
-  const filePath = path.resolve(process.cwd(), 'Calendar.sql');
+  const filePath = path.resolve(process.cwd(), 'src/database/Calendar.sql');
   try {
     const data = await fs.readFile(filePath, 'utf8');
     return data;
