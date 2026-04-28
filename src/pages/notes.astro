@@ -1,7 +1,9 @@
 ---
 import Navbar from '../components/navbar.astro';
-import VoiceRecorder from '../components/VoiceRecorder.jsx';
+import VoiceRecorder from '../components/VoiceRecorder.tsx';
 import '../css/notes.css';
+
+const eventId = Astro.url.searchParams.get('eventId');
 ---
 
 <div class="notes-container">
@@ -28,7 +30,7 @@ import '../css/notes.css';
 
                 <VoiceRecorder
                     client:load
-                    eventId={1}
+                    eventId={eventId}
                 />
             </div>
 
@@ -37,19 +39,62 @@ import '../css/notes.css';
 </div>
 
 <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('eventId');
+    
     const saveBtn = document.getElementById('save-notes-btn');
     const manualNotes = document.getElementById('manual-notes');
-    const dictationOutput = document.getElementById('dictation-output');
 
+    if (!eventId) {
+        console.warn('No event ID found in URL');
+    }
 
+    // FETCH NOTES ON PAGE LOAD
+    async function fetchNotes() {
+        if (!eventId) return;
+
+        try {
+            const res = await fetch(`/api/get_notes?eventId=${eventId}`, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.note) {
+                manualNotes.value = data.note.NoteContent || '';
+                console.log('Notes loaded:', data.note);
+            } else {
+                console.log('No notes found for this event');
+            }
+        } catch (err) {
+            console.error('Failed to fetch notes:', err);
+        }
+    }
+
+    // SAVE NOTES
     saveBtn?.addEventListener('click', async () => {
+        if (!eventId) {
+            alert('Error: Event ID is missing.');
+            return;
+        }
+
+        const noteContent = manualNotes?.value || '';
+
+        if (!noteContent.trim()) {
+            alert('Please enter some notes before saving.');
+            return;
+        }
+
         const payload = {
             commandId: crypto.randomUUID(),
             payload: {
-                manualNotes: manualNotes?.textContent,
-                dictationOutput: dictationOutput?.textContent,
+                eventId: Number(eventId),
+                noteContent: noteContent
             }
         };
+
+        console.log('Sending payload:', payload);
 
         try {
             const res = await fetch('/api/save_notes', {
@@ -59,17 +104,29 @@ import '../css/notes.css';
                 credentials: 'include'
             });
 
-            if (!res.ok) throw new Error("Failed to save");
+            const data = await res.json();
+            console.log('Response:', data);
+
+            if (!res.ok) throw new Error(data.error || "Failed to save");
 
             alert("Notes saved successfully!");
         } catch (err) {
-            alert("Failed to save notes.");
+            alert("Failed to save notes: " + (err instanceof Error ? err.message : 'Unknown error'));
             console.error(err);
         }
     });
 
-    window.updateDictation = (text) => {
-        const textarea = document.getElementById('dictation-output');
-        if (textarea) textarea.value = text;
+    // APPEND TRANSCRIPTION TO NOTES
+    window.appendTranscriptToNotes = (transcript: string, summary: string) => {
+        const textarea = document.getElementById('manual-notes');
+        if (textarea) {
+            const timestamp = new Date().toLocaleString();
+            const transcriptEntry = `\n\n--- Transcription (${timestamp}) ---\nSummary: ${summary}\n\nFull Transcript:\n${transcript}`;
+            textarea.value += transcriptEntry;
+            console.log('Transcript appended to notes');
+        }
     };
+
+    // INIT
+    fetchNotes();
 </script>

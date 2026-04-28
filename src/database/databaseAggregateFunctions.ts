@@ -402,6 +402,23 @@ class DatabaseAggregateFunctions {
 
     return row.GroupID;
   }
+
+  async saveNote(eventId: number, userId: number, noteContent: string): Promise<void> {
+    const sql = "INSERT INTO Notes (EventID, UserID, NoteContent, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?, ?)";
+    const now = new Date().toISOString();
+    await this.runQuery(sql, [eventId, userId, noteContent, now, now]);
+  }
+
+  async updateNote(eventId: number, userId: number, noteContent: string): Promise<void> {
+    const sql = "UPDATE Notes SET NoteContent = ?, UpdatedAt = ? WHERE EventID = ? AND UserID = ?";
+    const now = new Date().toISOString();
+    await this.runQuery(sql, [noteContent, now, eventId, userId]);
+  }
+
+  async getNote(eventId: number, userId: number): Promise<any> {
+    const sql = "SELECT * FROM Notes WHERE EventID = ? AND UserID = ?";
+    return await this.getQuery(sql, [eventId, userId]);
+  }
 }
 
 function createDatabase(name: string) {

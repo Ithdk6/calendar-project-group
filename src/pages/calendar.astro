@@ -214,7 +214,11 @@ import '../css/calendar.css';
   };
 
   // NAV TO NOTES
-  eventNotes?.addEventListener('click', () => {globalThis.location.href = '/notes'})
+  eventNotes?.addEventListener('click', () => {
+    if (selectedEvent) {
+      globalThis.location.href = `/notes?eventId=${selectedEvent.id}`;
+    }
+  });
 
   // -------------------------
   // INIT
