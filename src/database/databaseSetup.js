@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 
 // read the sql file content
 async function readFileContent() {
-  const filePath = path.resolve(process.cwd(), 'src', 'database', 'Calendar.sql');
+  const filePath = path.resolve(process.cwd(), 'Calendar.sql');
   try {
     const data = await fs.readFile(filePath, 'utf8');
     return data;
@@ -16,7 +16,7 @@ async function readFileContent() {
 }
 
 // Connect to the database and apply the schema from Calendar.sql.
-async function setupDatabase(dbPath = process.env.DB_NAME || './src/database/calendar.db') {
+async function setupDatabase(dbPath = process.env.DB_NAME || './calendar.db') {
   const sqlSetup = await readFileContent();
 
   if (!sqlSetup) {
@@ -87,5 +87,5 @@ async function executeSetup() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   executeSetup();
 }
-
+executeSetup();
 export { readFileContent, setupDatabase };
