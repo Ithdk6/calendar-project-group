@@ -1,0 +1,85 @@
+---
+import '../css/notification.css';
+---
+
+<div id="globalNotification" class="hidden"></div>
+
+<script>
+  let notification = '';
+  let notificationClass = '';
+  let visible = false;
+
+  const el = document.getElementById('globalNotification');
+
+  function render() {
+    if (!el)
+      return;
+
+    el.textContent = notification;
+    el.className = `${visible ? 'notification' : 'hidden'} ${notificationClass}`;
+  }
+
+  function clearNotification() {
+    visible = false;
+    notification = '';
+    notificationClass = '';
+    render();
+  }
+
+  function sendNotification(text: string, status: number, duration: number) {
+    notification = text;
+    visible = true;
+
+    if (status === 0)
+      notificationClass = 'successColors';
+    else if (status === 1)
+      notificationClass = 'neutralColors';
+    else if (status === 2)
+      notificationClass = 'failColors';
+
+    render();
+
+    if (duration !== undefined)
+      setTimeout(clearNotification, duration);
+  }
+
+  if (el)
+    el.addEventListener('click', clearNotification);
+
+  // INIT (fetch user + websocket)
+  async function init() {
+    try {
+      const res = await fetch('/api/get_user', { credentials: 'include' });
+      const data = await res.json();
+
+      if (!res.ok || !data?.data?.Uid)
+        return;
+
+      const userId = data.data.Uid;
+      console.log('User ID:', userId);
+
+      const ws = new WebSocket(`ws://localhost:3001?userId=${userId}`);
+
+      ws.onmessage = (event) => {
+        try {
+          const parsed = JSON.parse(JSON.parse(event.data));
+          if (parsed.text) {
+            console.log('Notification received:', parsed);
+            sendNotification(parsed.text, parsed.status, parsed.duration);
+          }
+        } catch (e) {
+          console.error('Failed to parse notification:', e);
+        }
+      };
+
+      window.addEventListener('beforeunload', () => {
+        ws.close();
+      });
+
+    } catch (err) {
+      console.error('Notification init failed:', err);
+    }
+  }
+
+  init();
+</script>

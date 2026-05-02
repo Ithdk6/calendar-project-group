@@ -1,0 +1,150 @@
+.notes-container {
+    display: flex;
+    height: calc(100vh - 60px);
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    padding-top: 60px;
+    box-sizing: border-box;
+}
+
+.notes-main {
+    flex-grow: 1;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.notes-header h2 {
+    color: #13aa81;
+}
+
+.notes-header button {
+    background-color: #13aa81;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.notes-header button:hover {
+    background-color: #0f8e6b;
+}
+
+.notes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    height: calc(100% - 80px);
+}
+
+.notes-panel {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.notes-panel h3 {
+    margin-bottom: 10px;
+    color: #13aa81;
+}
+
+textarea {
+    flex-grow: 1;
+    width: 100%;
+    resize: none;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border 0.2s ease;
+
+    box-sizing: border-box;
+}
+
+textarea:focus {
+    border-color: #13aa81;
+}
+
+@media (max-width: 900px) {
+    .notes-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.voice-recorder {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 10px;
+}
+
+.voice-recorder > div:first-child {
+    display: flex;
+    gap: 10px;
+}
+
+.voice-recorder button {
+    background-color: #13aa81;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.voice-recorder button:hover {
+    background-color: #0f8e6b;
+}
+
+.voice-recorder button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.voice-recorder strong {
+    color: #13aa81;
+}
+
+.voice-recorder > div:last-child {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.voice-recorder label {
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.voice-recorder textarea {
+    flex-grow: 1;
+    width: 100%;
+    resize: none;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.voice-recorder textarea:focus {
+    border-color: #13aa81;
+}
